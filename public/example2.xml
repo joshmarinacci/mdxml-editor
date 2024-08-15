@@ -1,0 +1,11 @@
+<document>
+    <h1>header 1</h1>
+    <p>paragraph of text with <strong>strong</strong> and <em>emphasis</em> text</p>
+    <h2>header 2</h2>
+
+    <ul>
+        <li>item 1</li>
+        <li>item 2</li>
+        <li>item 3</li>
+    </ul>
+</document>

@@ -21,12 +21,14 @@ import {TableCellNode, TableNode, TableRowNode} from "@lexical/table";
 import {$createHeadingNode, HeadingTagType, HeadingNode} from "@lexical/rich-text"
 import { $setBlocksType } from "@lexical/selection";
 import {CodeNode} from "@lexical/code"
+import {ListNode, ListItemNode} from "@lexical/list"
 
 const placeholder = 'Enter some rich text...';
 
 const editorConfig = {
     namespace: 'React.js Demo',
-    nodes: [TableNode, TableCellNode, TableRowNode, HeadingNode, CodeNode],
+    nodes: [TableNode, TableCellNode, TableRowNode, HeadingNode, CodeNode,
+    ListNode, ListItemNode],
     // Handling of errors during update
     onError(error: Error) {
         throw error;
