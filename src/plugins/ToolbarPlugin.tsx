@@ -17,8 +17,12 @@ import {
     REDO_COMMAND,
     SELECTION_CHANGE_COMMAND,
     UNDO_COMMAND,
+    INSERT_PARAGRAPH_COMMAND, LexicalCommand, createCommand
 } from 'lexical';
 import {useCallback, useEffect, useRef, useState} from 'react';
+import {INSERT_EMBED_COMMAND} from "@lexical/react/LexicalAutoEmbedPlugin";
+
+const MY_COOL_COMMAND:LexicalCommand<string> = createCommand();
 
 const LowPriority = 1;
 
@@ -78,6 +82,14 @@ export default function ToolbarPlugin() {
                 },
                 LowPriority,
             ),
+            editor.registerCommand(
+                MY_COOL_COMMAND,
+                (payload:string) => {
+                    console.log("payload is",payload)
+                    return false
+                },
+                LowPriority,
+            )
         );
     }, [editor, $updateToolbar]);
 
@@ -167,6 +179,14 @@ export default function ToolbarPlugin() {
                 aria-label="Justify Align">
                 <i className="format justify-align" />
             </button>{' '}
+            <button
+                onClick={() => {
+                    editor.dispatchCommand(MY_COOL_COMMAND,"foo");
+                }}
+                className="toolbar-item"
+                aria-label="Justify Align">
+                <b>code block</b>
+            </button>
         </div>
     );
 }
