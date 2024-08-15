@@ -1,0 +1,33 @@
+{
+  "name": "mdxml-editor",
+  "version": "0.0.0",
+  "type": "module",
+  "types": "build/index.d.ts",
+  "module": "build/index.esm.js",
+  "files": [
+    "build/*"
+  ],
+  "dependencies": {
+    "@lexical/react": "^0.17.0",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "lexical": "^0.17.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rtds-core": "^0.0.18",
+    "typescript": "^5.5.4"
+  },
+  "scripts": {
+    "build": "node build.js",
+    "start": "mkdir -p build && cp -r public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build --external:icons",
+    "clean": "rm -rf build",
+    "tsc": "tsc",
+    "test": "vitest run --dir src",
+    "release-patch": "npm run build && npm version patch && npm publish"
+  },
+  "devDependencies": {
+    "esbuild": "^0.23.0",
+    "npm-dts": "^1.3.13",
+    "vitest": "^1.4.0"
+  }
+}
