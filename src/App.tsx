@@ -13,13 +13,20 @@ import ToolbarPlugin from './plugins/ToolbarPlugin';
 import TreeViewPlugin from './plugins/TreeViewPlugin';
 import {useRef} from "react";
 import {JSONtoXML} from "./xml";
-import {CodeBlockNode, CodeBlockPlugin} from "./CodeBlockPlugin";
+// import {CodeBlockNode, CodeBlockPlugin} from "./CodeBlockPlugin";
+import {XMLImportPlugin} from "./XmlImportPlugin";
+import {TablePlugin} from "@lexical/react/LexicalTablePlugin";
+// import {TableOfContentsPlugin} from "@lexical/react/LexicalTableOfContentsPlugin";
+import {TableCellNode, TableNode, TableRowNode} from "@lexical/table";
+import {$createHeadingNode, HeadingTagType, HeadingNode} from "@lexical/rich-text"
+import { $setBlocksType } from "@lexical/selection";
+import {CodeNode} from "@lexical/code"
 
 const placeholder = 'Enter some rich text...';
 
 const editorConfig = {
     namespace: 'React.js Demo',
-    nodes: [CodeBlockNode],
+    nodes: [TableNode, TableCellNode, TableRowNode, HeadingNode, CodeNode],
     // Handling of errors during update
     onError(error: Error) {
         throw error;
@@ -53,7 +60,10 @@ export function App() {
                     <HistoryPlugin />
                     <AutoFocusPlugin />
                     <TreeViewPlugin />
-                    <CodeBlockPlugin/>
+                    {/*<CodeBlockPlugin/>*/}
+                    <XMLImportPlugin/>
+                    <TablePlugin/>
+                    {/*<TableOfContentsPlugin/>*/}
                 </div>
                 <button onClick={() => {
                     console.log('trying to get content from the editor',

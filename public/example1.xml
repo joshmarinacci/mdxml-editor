@@ -14,7 +14,7 @@
         if you notice anything off please file a bug report.
     </p>
 
-    <p>Also _note_ that <code>font.load()</code> now returns a promise instead of using a callback. If you
+    <p>Also <b>note</b> that <code>font.load()</code> now returns a promise instead of using a callback. If you
         need synchronous support you can still fuse <code>font.loadSync()</code>.
     </p>
 
