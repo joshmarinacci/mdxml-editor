@@ -13,12 +13,13 @@ import ToolbarPlugin from './plugins/ToolbarPlugin';
 import TreeViewPlugin from './plugins/TreeViewPlugin';
 import {useRef} from "react";
 import {JSONtoXML} from "./xml";
+import {CodeBlockNode, CodeBlockPlugin} from "./CodeBlockPlugin";
 
 const placeholder = 'Enter some rich text...';
 
 const editorConfig = {
     namespace: 'React.js Demo',
-    nodes: [],
+    nodes: [CodeBlockNode],
     // Handling of errors during update
     onError(error: Error) {
         throw error;
@@ -52,12 +53,20 @@ export function App() {
                     <HistoryPlugin />
                     <AutoFocusPlugin />
                     <TreeViewPlugin />
+                    <CodeBlockPlugin/>
                 </div>
                 <button onClick={() => {
                     console.log('trying to get content from the editor',
                         JSON.stringify(editorStateRef.current))
                     console.log(JSONtoXML(JSON.parse(JSON.stringify(editorStateRef.current))))
                 }}>export XML</button>
+                <button onClick={async () => {
+                    let str = await fetch('./example1.xml')
+                    let xmlstr = await str.text()
+                    let xml = new DOMParser().parseFromString(xmlstr, "text/xml")
+                    let doc = xml.documentElement
+                    console.log("loaded",doc)
+                }}>load example</button>
             </div>
         </LexicalComposer>
     );

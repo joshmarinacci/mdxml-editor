@@ -21,6 +21,7 @@ import {
 } from 'lexical';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {INSERT_EMBED_COMMAND} from "@lexical/react/LexicalAutoEmbedPlugin";
+import {INSERT_CODEBLOCK_COMMAND} from "../CodeBlockPlugin";
 
 const MY_COOL_COMMAND:LexicalCommand<string> = createCommand();
 
@@ -181,7 +182,7 @@ export default function ToolbarPlugin() {
             </button>{' '}
             <button
                 onClick={() => {
-                    editor.dispatchCommand(MY_COOL_COMMAND,"foo");
+                    editor.dispatchCommand(INSERT_CODEBLOCK_COMMAND,"some rad code");
                 }}
                 className="toolbar-item"
                 aria-label="Justify Align">

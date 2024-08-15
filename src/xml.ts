@@ -39,7 +39,6 @@ ${tab}</${root.name}>`
 }
 
 export function JSONtoXML(obj: object) {
-    console.log("converting ht eobject", obj)
     let root:XMLElement = {
         name:'article',
         attributes: new Map(),
