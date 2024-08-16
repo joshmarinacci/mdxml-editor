@@ -31,7 +31,11 @@ XML_TO_LEXICAL.set('p',() => $createParagraphNode())
 XML_TO_LEXICAL.set('ul',() => $createListNode("bullet"))
 XML_TO_LEXICAL.set('li',() => $createListItemNode(false))
 XML_TO_LEXICAL.set('codeblock', () => $createCodeNode("bash"))
+XML_TO_LEXICAL.set('strong', () => $createParagraphNode())
+XML_TO_LEXICAL.set('em', () => $createParagraphNode())
 // XML_TO_LEXICAL.set('code',() => $createCodeNode("code"))
+
+const inline_xml = ['strong','em']
 
 const SKIP_XML:Map<string,string> = new Map()
 SKIP_XML.set('code','code')
@@ -40,30 +44,39 @@ SKIP_XML.set('i','i')
 SKIP_XML.set('a','a')
 SKIP_XML.set('link','link')
 
+const skip_text = ['list']
+
 function xml_to_nodes2(node: ChildNode, parent: ElementNode) {
     // console.log("making",node.nodeName)
     if(node.nodeType === Node.TEXT_NODE) {
         let txt = node.textContent as string
-        // console.log(`text content '${txt}'`)
-        // console.log("parent",parent.getType())
-        if(parent.getType() === 'list') {
+        if(skip_text.includes(parent.getType())) {
             return
         }
-        parent.append($createTextNode(node.textContent as string))
-        return
+        const tn = $createTextNode(node.textContent as string)
+        parent.append(tn)
+        return tn
     }
 
     if(node.nodeType === Node.ELEMENT_NODE) {
         if(SKIP_XML.has(node.nodeName)) {
-            return
+            return undefined
         }
         if(XML_TO_LEXICAL.has(node.nodeName)) {
+            if(inline_xml.includes(node.nodeName)) {
+                for(let ch of node.childNodes) {
+                    let tn = xml_to_nodes2(ch,parent) as TextNode
+                    tn.setFormat('bold')
+                }
+                return undefined
+            }
             const cb = XML_TO_LEXICAL.get(node.nodeName) as Callback;
             const nd = cb()
             for(let ch of node.childNodes) {
                 xml_to_nodes2(ch,nd)
             }
             parent.append(nd)
+            return nd
 
         } else {
             throw new Error(`XML tag not supported '${node.nodeName}'`)
