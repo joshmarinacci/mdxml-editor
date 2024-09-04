@@ -59,7 +59,7 @@ export function App() {
                     <OnChangePlugin onChange={(editorState) => {
                         editorStateRef.current = editorState;
                     }}/>
-                    {/*<HistoryPlugin />*/}
+                    <HistoryPlugin />
                     <AutoFocusPlugin />
                     {/*<TreeViewPlugin />*/}
                     {/*<CodeBlockPlugin/>*/}
