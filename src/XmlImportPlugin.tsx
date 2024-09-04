@@ -129,7 +129,7 @@ export function XMLImportPlugin() {
     }
 
     return <div>
-    <button onClick={importXML}>import xml</button>
-        <button onClick={make_header}>make header</button>
+        <button onClick={importXML}>import xml</button>
+        {/*<button onClick={make_header}>make header</button>*/}
     </div>
 }

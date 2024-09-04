@@ -180,14 +180,14 @@ export default function ToolbarPlugin() {
                 aria-label="Justify Align">
                 <i className="format justify-align" />
             </button>{' '}
-            <button
-                onClick={() => {
-                    editor.dispatchCommand(INSERT_CODEBLOCK_COMMAND,"some rad code");
-                }}
-                className="toolbar-item"
-                aria-label="Justify Align">
-                <b>code block</b>
-            </button>
+            {/*<button*/}
+            {/*    onClick={() => {*/}
+            {/*        editor.dispatchCommand(INSERT_CODEBLOCK_COMMAND,"some rad code");*/}
+            {/*    }}*/}
+            {/*    className="toolbar-item"*/}
+            {/*    aria-label="Justify Align">*/}
+            {/*    <b>code block</b>*/}
+            {/*</button>*/}
         </div>
     );
 }
