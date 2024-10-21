@@ -10,27 +10,32 @@
   "dependencies": {
     "@lexical/react": "^0.17.0",
     "@lexical/table": "^0.17.0",
+    "@tauri-apps/api": "^1",
+    "@tauri-apps/plugin-dialog": "^2.0.1",
+    "@tauri-apps/plugin-fs": "^2.0.1",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "emoji-datasource-facebook": "^15.1.2",
-    "josh_react_util": "^1.0.26",
     "josh_js_util": "^0.1.39",
+    "josh_react_util": "^1.0.26",
     "lexical": "^0.17.0",
-    "rtds-react": "^0.0.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rtds-core": "^0.0.18",
+    "rtds-react": "^0.0.25",
     "typescript": "^5.5.4"
   },
   "scripts": {
     "build": "node build.js",
-    "start": "mkdir -p build && cp -r public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build --external:icons",
+    "dev": "mkdir -p build && cp -r public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build --external:icons",
     "clean": "rm -rf build",
     "tsc": "tsc",
     "test": "vitest run --dir src",
+    "tauri": "tauri",
     "release-patch": "npm run build && npm version patch && npm publish"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.0.4",
     "esbuild": "^0.23.0",
     "npm-dts": "^1.3.13",
     "vitest": "^1.4.0"

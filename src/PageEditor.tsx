@@ -9,15 +9,14 @@ import ToolbarPlugin from "./plugins/ToolbarPlugin.js";
 import {RichTextPlugin} from "@lexical/react/LexicalRichTextPlugin.js";
 import {ContentEditable} from "@lexical/react/LexicalContentEditable.js";
 import {OnChangePlugin} from "@lexical/react/LexicalOnChangePlugin.js";
-import {HistoryPlugin} from "@lexical/react/LexicalHistoryPlugin.js";
-import {AutoFocusPlugin} from "@lexical/react/LexicalAutoFocusPlugin.js";
-import {xml_to_nodes, XMLImportPlugin} from "./XmlImportPlugin.js";
+import {xml_to_nodes} from "./XmlImportPlugin.js";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary.js";
 
 import {CodeNode} from "@lexical/code"
 import {HeadingNode} from "@lexical/rich-text"
 import {useLexicalComposerContext} from "@lexical/react/LexicalComposerContext";
 import {$getRoot} from "lexical";
+import {readTextFile} from "@tauri-apps/plugin-fs";
 
 const editorConfig = {
     namespace: 'React.js Demo',
@@ -39,11 +38,20 @@ interface PageEditorProps {
 
 async function loadDoc(fileName: string) {
     console.log('loading',fileName)
-    let str = await fetch(`./${fileName}`)
-    let xmlstr = await str.text()
-    let xml = new DOMParser().parseFromString(xmlstr, "text/xml")
-    let doc = xml.childNodes[0]
-    return doc
+    if(window['__TAURI_INTERNALS__']) {
+        console.log("is tauri")
+        const xmlstr = await readTextFile(fileName)
+        // let str = await fetch(`./${fileName}`)
+        // let xmlstr = await str.text()
+        let xml = new DOMParser().parseFromString(xmlstr, "text/xml")
+        return xml.childNodes[0]
+    } else {
+        console.log("is not tauri")
+        let str = await fetch(`./${fileName}`)
+        let xml_str = await str.text()
+        let xml = new DOMParser().parseFromString(xml_str, "text/xml")
+        return xml.childNodes[0]
+    }
 }
 
 function PageEditor({fileName}: PageEditorProps) {
@@ -80,7 +88,7 @@ function PageEditor({fileName}: PageEditorProps) {
                         <OnChangePlugin onChange={(editorState) => editorStateRef.current = editorState}/>
                         {/*<HistoryPlugin/>*/}
                         {/*<AutoFocusPlugin/>*/}
-                        <XMLImportPlugin/>
+                        {/*<XMLImportPlugin/>*/}
                     </div>
                 </div>
         </div>

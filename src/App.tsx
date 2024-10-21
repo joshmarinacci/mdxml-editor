@@ -1,5 +1,6 @@
 import './App.css'
-
+import { open } from '@tauri-apps/plugin-dialog';
+import { exists, BaseDirectory, readTextFile } from '@tauri-apps/plugin-fs';
 import ExampleTheme from './ExampleTheme';
 import {TableCellNode, TableNode, TableRowNode} from "@lexical/table";
 import {HeadingNode} from "@lexical/rich-text"
@@ -10,7 +11,7 @@ import {DialogContext, DialogContextImpl, PopupContext, PopupContextImpl,} from 
 
 import "./mainlayout.css"
 import 'rtds-react/build/index.esm.css'
-import {Site} from "./model.js";
+import {FileInfo, FileType, Site} from "./model.js";
 import {FileListView} from "./FileListView.js";
 import {PageEditorWrapper} from "./PageEditor.js";
 
@@ -91,10 +92,29 @@ site.set('selectedFile',null)
 
 
 export function App() {
+    const doOpen = async () => {
+        const selected = await open({
+            multiple:false,
+        });
+        console.log("selected the file",selected)
+        if(selected) {
+            let ex = await exists(selected, {baseDir: BaseDirectory.AppData});
+            console.log(ex)
+            const configToml = await readTextFile(selected)
+            console.log("xml file is",configToml)
+            let file = FileInfo.cloneWith({
+                fileName: selected,
+                fileType: 'mdxml'
+            })
+            site.get('files').push(file)
+        }
+    }
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
             <div className={'main-layout'}>
-                <header>{site.get('title').get()}</header>
+                <header>{site.get('title').get()}
+                    <button onClick={doOpen}>open</button>
+                </header>
                 <FileListView className={'file-list'} site={site}/>
                 <div className={'page-list'}>the page tree</div>
                 <PageEditorWrapper site={site}/>
