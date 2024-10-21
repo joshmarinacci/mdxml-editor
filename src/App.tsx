@@ -10,9 +10,9 @@ import {DialogContext, DialogContextImpl, PopupContext, PopupContextImpl,} from 
 
 import "./mainlayout.css"
 import 'rtds-react/build/index.esm.css'
-import {FileInfo, Site} from "./model.js";
+import {Site} from "./model.js";
 import {FileListView} from "./FileListView.js";
-import {useChanged} from "rtds-react";
+import {PageEditorWrapper} from "./PageEditor.js";
 
 const placeholder = 'Enter some rich text...';
 
@@ -90,16 +90,6 @@ const site = Site.cloneWith({
 site.set('selectedFile',null)
 
 
-function PageEditor(props: { site: typeof Site }) {
-    useChanged(props.site)
-    let selected = props.site.get('selectedFile')
-    if(selected) {
-        return <div className={'editor'}>the editor for {selected.get('fileName').get()}</div>
-    } else {
-        return <div className={'editor'}>no file selected</div>
-    }
-}
-
 export function App() {
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
@@ -107,7 +97,7 @@ export function App() {
                 <header>{site.get('title').get()}</header>
                 <FileListView className={'file-list'} site={site}/>
                 <div className={'page-list'}>the page tree</div>
-                <PageEditor site={site}/>
+                <PageEditorWrapper site={site}/>
             </div>
         </PopupContext.Provider>
     </DialogContext.Provider>

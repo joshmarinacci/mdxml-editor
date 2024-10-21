@@ -87,7 +87,7 @@ function xml_to_nodes2(node: ChildNode, parent: ElementNode) {
     console.warn(`unprocessed node type ${node.nodeType}`)
 }
 
-function xml_to_nodes(doc: ChildNode, root: RootNode) {
+export function xml_to_nodes(doc: ChildNode, root: RootNode) {
     if(doc.nodeName === 'document') {
         for(let ch of doc.childNodes) {
             if(ch.nodeType === Node.ELEMENT_NODE) {
