@@ -1,0 +1,25 @@
+.main-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 200px;
+    --panel-background: #d8d8d8;
+    --panel-border: 1px solid #333;
+    min-height: 95vh;
+}
+
+.main-layout .file-list {
+    background-color: var(--panel-background);
+    border: var(--panel-border);
+    grid-column: 1;
+}
+.main-layout .page-list {
+    border: var(--panel-border);
+    background-color: var(--panel-background);
+    grid-column: 1;
+}
+.main-layout .editor {
+    border: var(--panel-border);
+    background-color: white;
+    grid-row: 1/ span 2;
+    grid-column: 2;
+}
