@@ -37,8 +37,9 @@ interface PageEditorProps {
     fileName?: any
 }
 
-async function loadDoc(fileName: any) {
-    let str = await fetch('./example2.xml')
+async function loadDoc(fileName: string) {
+    console.log('loading',fileName)
+    let str = await fetch(`./${fileName}`)
     let xmlstr = await str.text()
     let xml = new DOMParser().parseFromString(xmlstr, "text/xml")
     let doc = xml.childNodes[0]
@@ -50,8 +51,7 @@ function PageEditor({fileName}: PageEditorProps) {
     const [editor] = useLexicalComposerContext()
 
     useEffect(() => {
-        console.log("filename changed to",fileName)
-        loadDoc(fileName).then(doc => {
+        loadDoc(fileName.get()).then(doc => {
             editor.update(() => {
                 const root = $getRoot()
                 // remove all children

@@ -77,11 +77,11 @@ const editorConfig = {
 const site = Site.cloneWith({
     files: [
         {
-            fileName: "main.xml",
+            fileName: "example1.xml",
             fileType: "mdxml"
         },
         {
-            fileName: "details.xml",
+            fileName: "example2.xml",
             fileType: "mdxml"
         },
     ],

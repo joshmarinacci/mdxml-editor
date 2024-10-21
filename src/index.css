@@ -17,9 +17,9 @@ body {
 }
 
 .other h2 {
-    font-size: 18px;
-    color: #444;
-    margin-bottom: 7px;
+    /*font-size: 18px;*/
+    /*color: #444;*/
+    /*margin-bottom: 7px;*/
 }
 
 .other a {
@@ -58,7 +58,7 @@ h1 {
     max-width: 600px;
     color: #000;
     position: relative;
-    line-height: 20px;
+    /*line-height: 20px;*/
     font-weight: 400;
     text-align: left;
     border-top-left-radius: 10px;
@@ -140,7 +140,7 @@ h1 {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     overflow: auto;
-    line-height: 14px;
+    /*line-height: 14px;*/
 }
 
 .editor-code {
@@ -219,28 +219,30 @@ h1 {
     margin: 0;
     margin-bottom: 8px;
     position: relative;
+    /*border: 1px solid red;*/
+    line-height: 150%;
 }
 
 .editor-paragraph:last-child {
     margin-bottom: 0;
 }
 
+.editor-heading-h1, .editor-heading-h2, .editor-heading-h3 {
+    font-weight: bold;
+}
 .editor-heading-h1 {
-    font-size: 24px;
-    color: rgb(5, 5, 5);
-    font-weight: 400;
-    margin: 0;
-    margin-bottom: 12px;
-    padding: 0;
+    font-size: 40px;
+    text-transform: none;
+    padding: 1rem 0;
+    border: 1px solid red;
+    line-height: 150%;
+}
+.editor-heading-h1 span {
+    font-size: unset;
 }
 
 .editor-heading-h2 {
     font-size: 15px;
-    color: rgb(101, 103, 107);
-    font-weight: 700;
-    margin: 0;
-    margin-top: 10px;
-    padding: 0;
     text-transform: uppercase;
 }
 

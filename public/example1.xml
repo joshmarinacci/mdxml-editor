@@ -102,9 +102,8 @@
         Node buffer. No browser or window required.
     </p>
 
-    <p>PureImage is meant to be a small and maintainable Canvas library.
-        It is _not meant to be fast_. If there are two choices of algorithm we will
-        take the one with the simplest implementation, and preferably the fewest lines.
+    <p>PureImage is meant to be a small and maintainable Canvas library. It is _not meant to be fast_. If there are two choices of
+        algorithm we will take the one with the simplest implementation, and preferably the fewest lines.
         We avoid special cases and optimizations to keep the code simple and maintainable.
         It should run everywhere and be always produce the same output. But it will not be
         fast. If you need speed go use something else.

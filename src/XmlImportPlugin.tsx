@@ -33,6 +33,7 @@ XML_TO_LEXICAL.set('li',() => $createListItemNode(false))
 XML_TO_LEXICAL.set('codeblock', () => $createCodeNode("bash"))
 XML_TO_LEXICAL.set('strong', () => $createParagraphNode())
 XML_TO_LEXICAL.set('em', () => $createParagraphNode())
+XML_TO_LEXICAL.set('b', () => $createParagraphNode())
 // XML_TO_LEXICAL.set('code',() => $createCodeNode("code"))
 
 const inline_xml = ['strong','em']
@@ -49,11 +50,13 @@ const skip_text = ['list']
 function xml_to_nodes2(node: ChildNode, parent: ElementNode) {
     // console.log("making",node.nodeName)
     if(node.nodeType === Node.TEXT_NODE) {
-        let txt = node.textContent as string
         if(skip_text.includes(parent.getType())) {
             return
         }
-        const tn = $createTextNode(node.textContent as string)
+        let txt = (node.textContent as string)
+            .replaceAll(/\s+/g,' ')
+            .trim()
+        const tn = $createTextNode(txt)
         parent.append(tn)
         return tn
     }
@@ -108,8 +111,6 @@ export function XMLImportPlugin() {
         let xmlstr = await str.text()
         let xml = new DOMParser().parseFromString(xmlstr, "text/xml")
         let doc = xml.childNodes[0]
-        console.log("loaded",doc)
-
         editor.update( () => {
             xml_to_nodes(doc,$getRoot())
             // Select the root
