@@ -35,27 +35,34 @@ XML_TO_LEXICAL.set('strong', () => $createParagraphNode())
 XML_TO_LEXICAL.set('em', () => $createParagraphNode())
 XML_TO_LEXICAL.set('b', () => $createParagraphNode())
 // XML_TO_LEXICAL.set('code',() => $createCodeNode("code"))
+XML_TO_LEXICAL.set('code', () => $createParagraphNode())
 
-const inline_xml = ['strong','em']
+const inline_xml = ['strong','em','b','i','code']
 
 const SKIP_XML:Map<string,string> = new Map()
-SKIP_XML.set('code','code')
+// SKIP_XML.set('code','code')
 SKIP_XML.set('image','image')
 SKIP_XML.set('i','i')
 SKIP_XML.set('a','a')
 SKIP_XML.set('link','link')
 
+const TYPE_TO_FORMAT = new Map<string,string>()
+TYPE_TO_FORMAT.set('strong','bold')
+TYPE_TO_FORMAT.set('b','bold')
+TYPE_TO_FORMAT.set('code','code')
+TYPE_TO_FORMAT.set('em','italic')
+
 const skip_text = ['list']
 
-function xml_to_nodes2(node: ChildNode, parent: ElementNode) {
-    // console.log("making",node.nodeName)
+function xml_to_nodes2(node: ChildNode, parent: ElementNode, strip_whitespace:boolean) {
     if(node.nodeType === Node.TEXT_NODE) {
         if(skip_text.includes(parent.getType())) {
             return
         }
-        let txt = (node.textContent as string)
-            .replaceAll(/\s+/g,' ')
-            .trim()
+        let txt = node.textContent as string
+        if(strip_whitespace) {
+            txt = txt.replaceAll(/\s+/g,' ').trim()
+        }
         const tn = $createTextNode(txt)
         parent.append(tn)
         return tn
@@ -68,15 +75,21 @@ function xml_to_nodes2(node: ChildNode, parent: ElementNode) {
         if(XML_TO_LEXICAL.has(node.nodeName)) {
             if(inline_xml.includes(node.nodeName)) {
                 for(let ch of node.childNodes) {
-                    let tn = xml_to_nodes2(ch,parent) as TextNode
-                    tn.setFormat('bold')
+                    let tn = xml_to_nodes2(ch,parent,false) as TextNode
+                    // console.log(node.nodeName)
+                    if(TYPE_TO_FORMAT.has(node.nodeName)) {
+                        tn.setFormat(TYPE_TO_FORMAT.get(node.nodeName))
+                    }
                 }
                 return undefined
             }
             const cb = XML_TO_LEXICAL.get(node.nodeName) as Callback;
             const nd = cb()
+            if(node.nodeName === 'codeblock') {
+                console.log("is codeblock")
+            }
             for(let ch of node.childNodes) {
-                xml_to_nodes2(ch,nd)
+                xml_to_nodes2(ch,nd,true)
             }
             parent.append(nd)
             return nd
@@ -94,7 +107,7 @@ export function xml_to_nodes(doc: ChildNode, root: RootNode) {
     if(doc.nodeName === 'document') {
         for(let ch of doc.childNodes) {
             if(ch.nodeType === Node.ELEMENT_NODE) {
-                xml_to_nodes2(ch,root)
+                xml_to_nodes2(ch,root,true)
             }
             if(ch.nodeType === Node.TEXT_NODE) {
                  // const txt = $createTextNode(ch.textContent as string)

@@ -1,6 +1,8 @@
 <document>
     <h1>header 1</h1>
-    <p>paragraph of text with <strong>strong</strong> and <em>emphasis</em> text</p>
+    <p>A pparagraph of text with <strong>strong</strong> and <em>emphasis</em> text
+        and some <code>inline code</code>.
+    </p>
     <h2>header 2</h2>
 
     <ul>
@@ -8,5 +10,12 @@
         <li>item 2</li>
         <li>item 3</li>
     </ul>
-    <p>this is some text and then some more text and then yet some more text </p>
+    <p>this is some text
+        and then some more text
+        and then yet some more text </p>
+
+    <codeblock language="bash">
+        bash example
+    </codeblock>
+
 </document>
