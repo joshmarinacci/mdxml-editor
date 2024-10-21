@@ -10,15 +10,16 @@ import {DialogContext, DialogContextImpl, PopupContext, PopupContextImpl,} from 
 
 import "./mainlayout.css"
 import 'rtds-react/build/index.esm.css'
-import {Site} from "./model.js";
+import {FileInfo, Site} from "./model.js";
 import {FileListView} from "./FileListView.js";
+import {useChanged} from "rtds-react";
 
 const placeholder = 'Enter some rich text...';
 
 const editorConfig = {
     namespace: 'React.js Demo',
     nodes: [TableNode, TableCellNode, TableRowNode, HeadingNode, CodeNode,
-    ListNode, ListItemNode],
+        ListNode, ListItemNode],
     // Handling of errors during update
     onError(error: Error) {
         throw error;
@@ -74,27 +75,40 @@ const editorConfig = {
 
 
 const site = Site.cloneWith({
-    files:[
+    files: [
         {
-            fileName:"main.xml",
+            fileName: "main.xml",
             fileType: "mdxml"
         },
         {
-            fileName:"details.xml",
+            fileName: "details.xml",
             fileType: "mdxml"
         },
-    ]
+    ],
 })
+// @ts-ignore
+site.set('selectedFile',null)
 
+
+function PageEditor(props: { site: typeof Site }) {
+    useChanged(props.site)
+    let selected = props.site.get('selectedFile')
+    if(selected) {
+        return <div className={'editor'}>the editor for {selected.get('fileName').get()}</div>
+    } else {
+        return <div className={'editor'}>no file selected</div>
+    }
+}
 
 export function App() {
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
-    <div className={'main-layout'}>
-        <FileListView className={'file-list'} site={site}/>
-        <div className={'page-list'}>the page tree</div>
-        <div className={'editor'}>the editor</div>
-    </div>
+            <div className={'main-layout'}>
+                <header>{site.get('title').get()}</header>
+                <FileListView className={'file-list'} site={site}/>
+                <div className={'page-list'}>the page tree</div>
+                <PageEditor site={site}/>
+            </div>
         </PopupContext.Provider>
     </DialogContext.Provider>
 

@@ -6,6 +6,8 @@ export const FileType = S.enum(['mdxml','directory','image','other'],'other')
 export const FileInfo = S.map({
     fileName: S.string(),
     fileType: FileType,
+},{
+    typeName:'FileInfo'
 })
 
 export const PageInfo = S.map({
@@ -16,6 +18,7 @@ export const PageInfo = S.map({
 export const Site = S.map({
     files: S.list(FileInfo),
     pages: S.list(PageInfo),
-    title: S.string(),
+    title: S.string("Trunk Docs"),
     docsetFile: S.string(),
+    selectedFile: FileInfo
 })
