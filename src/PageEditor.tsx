@@ -1,4 +1,4 @@
-import {Site} from "./model.js";
+import {FileInfo, Site} from "./model.js";
 import {useChanged} from "rtds-react";
 import {useEffect, useRef} from "react";
 import {LexicalComposer} from "@lexical/react/LexicalComposer.js";
@@ -54,12 +54,12 @@ async function loadDoc(fileName: string) {
     }
 }
 
-function PageEditor({fileName}: PageEditorProps) {
+function PageEditor(props:{file:typeof FileInfo}) {
     const editorStateRef = useRef(undefined)
     const [editor] = useLexicalComposerContext()
 
     useEffect(() => {
-        loadDoc(fileName.get()).then(doc => {
+        loadDoc(props.file.get('fileName').get()).then(doc => {
             editor.update(() => {
                 const root = $getRoot()
                 // remove all children
@@ -67,7 +67,7 @@ function PageEditor({fileName}: PageEditorProps) {
                 xml_to_nodes(doc, $getRoot())
             })
         })
-    },[fileName])
+    },[props.file])
     return (
         <div className={'editor'}>
                 <div className="editor-container">
@@ -103,7 +103,7 @@ export function PageEditorWrapper(props: { site: typeof Site }) {
     if (selected) {
         // return <div className={'editor'}>the editor for {selected.get('fileName').get()}</div>
         return <LexicalComposer initialConfig={editorConfig}>
-                <PageEditor fileName={selected.get('fileName')}/>
+                <PageEditor file={selected}/>
         </LexicalComposer>
     } else {
         return <div className={'editor'}>no file selected</div>
