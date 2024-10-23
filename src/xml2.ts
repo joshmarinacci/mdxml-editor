@@ -1,9 +1,9 @@
 import {HeadingNode} from "@lexical/rich-text"
-import {ElementNode, RootNode} from "lexical";
+import {ElementNode, RootNode, TextNode} from "lexical";
 import {CodeNode} from "@lexical/code"
 
 function lex_to_xml(node:ElementNode, xmlDoc: Document):Element {
-    // console.log("doing ",node.getType())
+    console.log("doing ",node.getType())
     if(node.getType() === 'heading') {
         const heading = xmlDoc.createElement((node as HeadingNode).getTag())
         heading.appendChild(document.createTextNode(node.getTextContent()));
@@ -11,7 +11,34 @@ function lex_to_xml(node:ElementNode, xmlDoc: Document):Element {
     }
     if(node.getType() === 'paragraph') {
         const para = xmlDoc.createElement('para')
-        para.appendChild(document.createTextNode(node.getTextContent()));
+        for(let ch of node.getChildren()) {
+            let text = ch as TextNode
+            if(text.hasFormat('bold')) {
+                const el = document.createElement('strong')
+                el.appendChild(document.createTextNode(ch.getTextContent()))
+                para.appendChild(el)
+                continue
+            }
+            if(text.hasFormat('italic')) {
+                const el = document.createElement('em')
+                el.appendChild(document.createTextNode(ch.getTextContent()))
+                para.appendChild(el)
+                continue
+            }
+            if(text.hasFormat('code')) {
+                const el = document.createElement('code')
+                el.appendChild(document.createTextNode(ch.getTextContent()))
+                para.appendChild(el)
+                continue
+            }
+            if(ch.getType() === 'text') {
+                const txt = document.createTextNode(ch.getTextContent())
+                para.appendChild(txt)
+            } else {
+                const xe = lex_to_xml(ch as ElementNode, xmlDoc)
+                para.appendChild(xe)
+            }
+        }
         return para
     }
     if(node.getType() === 'list') {
@@ -42,7 +69,10 @@ function lex_to_xml(node:ElementNode, xmlDoc: Document):Element {
 const DOM_ELEMENT_TYPE = 1;
 const DOM_TEXT_TYPE = 3;
 function xml_pretty_print2(el: Element, output:OutputFormatter):void {
-    output.addLine(`<${el.nodeName}>`)
+    let str = `<${el.nodeName}`
+    for(let at of el.attributes) str += ` ${at.name}="${at.value}"`
+    str += ">"
+    output.addLine(str)
     output.indent()
     for(let child of el.childNodes) {
         if(child.nodeType === DOM_ELEMENT_TYPE) {
@@ -100,7 +130,6 @@ export function nodes_to_xml(rootNode: RootNode):Document {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString('<document></document>', "text/xml"); //important to use "text/xml"
     console.log("xml doc is",xmlDoc)
-    console.log("root is",rootNode)
     for(let ch of rootNode.getChildren()) {
         xmlDoc.documentElement.append(lex_to_xml(ch as ElementNode,xmlDoc))
     }
