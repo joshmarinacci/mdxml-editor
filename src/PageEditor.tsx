@@ -17,7 +17,7 @@ import {CodeNode} from "@lexical/code"
 import {HeadingNode} from "@lexical/rich-text"
 import {useLexicalComposerContext} from "@lexical/react/LexicalComposerContext";
 import {$getRoot, ElementNode, LexicalNode, RootNode, TextNode} from "lexical";
-import {readTextFile} from "@tauri-apps/plugin-fs";
+import {readTextFile, writeTextFile} from "@tauri-apps/plugin-fs";
 import {nodes_to_xml, xml_pretty_print} from "./xml2.js";
 
 const editorConfig = {
@@ -56,7 +56,15 @@ async function loadDoc(fileName: string) {
     }
 }
 
-
+async function saveDoc(filename: string, xml_str: string) {
+    if(window['__TAURI_INTERNALS__']) {
+        console.log("is tauri")
+        await writeTextFile(filename,xml_str)
+    } else {
+        console.log("is not tauri")
+        forceDownloadBlob(filename, new Blob([xml_str], {type: "text/xml"}))
+    }
+}
 
 function PageEditor(props:{file:typeof FileInfo}) {
     const editorStateRef = useRef(undefined)
@@ -78,7 +86,7 @@ function PageEditor(props:{file:typeof FileInfo}) {
             const xml = nodes_to_xml($getRoot())
             const xml_str = xml_pretty_print(xml)
             console.log("final string",xml_str)
-            forceDownloadBlob(props.file.get('fileName').get(), new Blob([xml_str],{type: "text/xml"}))
+            saveDoc(props.file.get('fileName').get(),xml_str)
         })
     }
     return (

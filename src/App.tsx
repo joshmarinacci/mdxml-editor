@@ -41,6 +41,7 @@ export function App() {
                 fileName: selected,
                 fileType: 'mdxml'
             })
+            site.get('files').clear()
             site.get('files').push(file)
         }
     }
