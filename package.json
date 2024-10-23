@@ -19,6 +19,7 @@
     "emoji-datasource-facebook": "^15.1.2",
     "josh_js_util": "^0.1.39",
     "josh_react_util": "^1.0.26",
+    "josh_web_util": "^0.0.5",
     "lexical": "^0.17.0",
     "mdxml-tools": "^0.0.7",
     "react": "^18.2.0",

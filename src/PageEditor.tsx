@@ -1,4 +1,5 @@
 import {FileInfo, Site} from "./model.js";
+import {forceDownloadBlob} from "josh_web_util"
 import {useChanged} from "rtds-react";
 import {useEffect, useRef} from "react";
 import {LexicalComposer} from "@lexical/react/LexicalComposer.js";
@@ -15,8 +16,9 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary.js";
 import {CodeNode} from "@lexical/code"
 import {HeadingNode} from "@lexical/rich-text"
 import {useLexicalComposerContext} from "@lexical/react/LexicalComposerContext";
-import {$getRoot} from "lexical";
+import {$getRoot, ElementNode, LexicalNode, RootNode, TextNode} from "lexical";
 import {readTextFile} from "@tauri-apps/plugin-fs";
+import {nodes_to_xml, xml_pretty_print} from "./xml2.js";
 
 const editorConfig = {
     namespace: 'React.js Demo',
@@ -54,6 +56,8 @@ async function loadDoc(fileName: string) {
     }
 }
 
+
+
 function PageEditor(props:{file:typeof FileInfo}) {
     const editorStateRef = useRef(undefined)
     const [editor] = useLexicalComposerContext()
@@ -68,29 +72,39 @@ function PageEditor(props:{file:typeof FileInfo}) {
             })
         })
     },[props.file])
+    const doExport = () => {
+        editor.update(() => {
+            console.log("exporting",$getRoot())
+            const xml = nodes_to_xml($getRoot())
+            const xml_str = xml_pretty_print(xml)
+            console.log("final string",xml_str)
+            forceDownloadBlob(props.file.get('fileName').get(), new Blob([xml_str],{type: "text/xml"}))
+        })
+    }
     return (
         <div className={'editor'}>
-                <div className="editor-container">
-                    <ToolbarPlugin/>
-                    <div className="editor-inner">
-                        <RichTextPlugin
-                            contentEditable={
-                                <ContentEditable
-                                    className="editor-input"
-                                    aria-placeholder={placeholder}
-                                    placeholder={
-                                        <div className="editor-placeholder">{placeholder}</div>
-                                    }
-                                />
-                            }
-                            ErrorBoundary={LexicalErrorBoundary}
-                        />
-                        <OnChangePlugin onChange={(editorState) => editorStateRef.current = editorState}/>
-                        {/*<HistoryPlugin/>*/}
-                        {/*<AutoFocusPlugin/>*/}
-                        {/*<XMLImportPlugin/>*/}
-                    </div>
+            <div className="editor-container">
+                <button onClick={doExport}>export</button>
+                <ToolbarPlugin/>
+                <div className="editor-inner">
+                    <RichTextPlugin
+                        contentEditable={
+                            <ContentEditable
+                                className="editor-input"
+                                aria-placeholder={placeholder}
+                                placeholder={
+                                    <div className="editor-placeholder">{placeholder}</div>
+                                }
+                            />
+                        }
+                        ErrorBoundary={LexicalErrorBoundary}
+                    />
+                    <OnChangePlugin onChange={(editorState) => editorStateRef.current = editorState}/>
+                    {/*<HistoryPlugin/>*/}
+                    {/*<AutoFocusPlugin/>*/}
+                    {/*<XMLImportPlugin/>*/}
                 </div>
+            </div>
         </div>
     )
         ;
