@@ -28,10 +28,11 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "build": "node build.js",
-    "dev": "mkdir -p build && cp -r public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build --external:icons",
     "clean": "rm -rf build",
+    "build": "node build.js",
     "tsc": "tsc",
+    "dev": "mkdir -p build && cp -r public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build --external:icons",
+    "tauri-dev": "tauri dev",
     "test": "vitest run --dir src",
     "tauri": "tauri",
     "release-patch": "npm run build && npm version patch && npm publish"
