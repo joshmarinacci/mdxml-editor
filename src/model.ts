@@ -5,8 +5,8 @@ const S = new Schema()
 export const FileType = S.enum(['mdxml','directory','image','other'],'other')
 export const FileInfo = S.map({
     fileName: S.string(),
+    filePath: S.string(),
     fileType: FileType,
-    content: S.string()
 },{
     typeName:'FileInfo'
 })

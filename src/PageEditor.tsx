@@ -71,7 +71,7 @@ function PageEditor(props:{file:typeof FileInfo}) {
     const [editor] = useLexicalComposerContext()
 
     useEffect(() => {
-        loadDoc(props.file.get('fileName').get()).then(doc => {
+        loadDoc(props.file.get('filePath').get()).then(doc => {
             editor.update(() => {
                 const root = $getRoot()
                 // remove all children
@@ -86,7 +86,7 @@ function PageEditor(props:{file:typeof FileInfo}) {
             const xml = nodes_to_xml($getRoot())
             const xml_str = xml_pretty_print(xml)
             console.log("final string",xml_str)
-            saveDoc(props.file.get('fileName').get(),xml_str)
+            saveDoc(props.file.get('filePath').get(),xml_str)
         })
     }
     return (

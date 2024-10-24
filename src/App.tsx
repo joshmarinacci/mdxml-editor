@@ -1,6 +1,5 @@
 import './App.css'
 import { open } from '@tauri-apps/plugin-dialog';
-import {doRender} from "mdxml-tools"
 import { exists, BaseDirectory, readTextFile } from '@tauri-apps/plugin-fs';
 import {DialogContext, DialogContextImpl, PopupContext, PopupContextImpl,} from 'josh_react_util'
 
@@ -14,11 +13,13 @@ const site = Site.cloneWith({
     files: [
         {
             fileName: "example1.xml",
-            fileType: "mdxml"
+            fileType: "mdxml",
+            filePath: "examples/pages/example1.xml"
         },
         {
             fileName: "example2.xml",
-            fileType: "mdxml"
+            fileType: "mdxml",
+            filePath: "examples/pages/example2.xml"
         },
     ],
 })
@@ -37,8 +38,10 @@ export function App() {
             console.log(ex)
             const configToml = await readTextFile(selected)
             console.log("xml file is",configToml)
+            const filename = selected.substring(selected.lastIndexOf('/')+1)
             let file = FileInfo.cloneWith({
-                fileName: selected,
+                filePath: selected,
+                fileName: filename,
                 fileType: 'mdxml'
             })
             site.get('files').clear()
