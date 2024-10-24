@@ -72,34 +72,45 @@ function xml_pretty_print2(el: Element, output:OutputFormatter):void {
     let str = `<${el.nodeName}`
     for(let at of el.attributes) str += ` ${at.name}="${at.value}"`
     str += ">"
-    output.addLine(str)
+    if(el.nodeName === 'h1') {
+        output.addText(str)
+        output.setInline(true)
+    } else {
+        output.addText(str)
+        output.addText("\n")
+    }
     output.indent()
     for(let child of el.childNodes) {
         if(child.nodeType === DOM_ELEMENT_TYPE) {
             xml_pretty_print2(child as Element, output)
         }
         if(child.nodeType === DOM_TEXT_TYPE) {
-            output.addLine((child as unknown as Text).textContent +"")
+            output.addText((child as unknown as Text).textContent +"")
         }
     }
     output.outdent()
-    output.addLine(`</${el.nodeName}>`)
+    if(el.nodeName === 'h1') {
+        output.addText(`</${el.nodeName}>`)
+        output.setInline(false)
+        output.addText("\n")
+    } else {
+        output.addText(`</${el.nodeName}>`)
+    }
 }
 
 class OutputFormatter {
     private lines: string[];
     private depth: number;
+    private inline: boolean;
 
     constructor() {
         this.lines = []
         this.depth = 0
+        this.inline = false
     }
 
-    addLine(s: string) {
-        this.lines.push(this.genIndent()+s)
-    }
     toString() {
-        return this.lines.join("\n")
+        return this.lines.join("")
     }
 
     indent() {
@@ -116,6 +127,17 @@ class OutputFormatter {
             tab += "    "
         }
         return tab
+    }
+
+    addText(str: string) {
+        if(!this.inline) {
+            this.lines.push(this.genIndent())
+        }
+        this.lines.push(str)
+    }
+
+    setInline(b: boolean) {
+        this.inline = b
     }
 }
 
