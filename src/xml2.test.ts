@@ -11,7 +11,7 @@ function reformat(original: string) {
 }
 
 function dprint(desc: string, formatted: string) {
-    console.log(desc);
+    console.log(`===\n${desc}`);
     console.log(formatted.replaceAll(' ','.').replaceAll('\n','N\n').trimEnd());
 }
 
@@ -51,22 +51,23 @@ describe("xml to text",() => {
         dprint("should be",formatted)
         expect(reformat(original).trim()).toEqual(formatted.trim())
     })
+})
+describe("codeblocks",() => {
+    it("should print a codeblock", () => {
+        const original = `<codeblock language="javascript">//write to 'out.png'
+PImage.encodePNGToStream(img1, fs.createWriteStream("out.png"))
+.then(() => {
+    console.log("wrote out the png file to out.png");
+})
+</codeblock>`
+        const formatted = `<codeblock language="javascript">//write to 'out.png'
+PImage.encodePNGToStream(img1, fs.createWriteStream("out.png"))
+.then(() => {
+    console.log("wrote out the png file to out.png");
+})
+</codeblock>\n`
+        dprint("should be",formatted)
+        expect(reformat(original)).toEqual(formatted)
+    })
 
-    /*
-
-    "<document></document>"
-    "<document>
-    </document>"
-
-    "<h1>text</h1>"
-    "<h1>text</h1>"
-
-    "<document><h1>text</h1></document>"
-    "<document>
-        <h1>text</h1>
-     </document>"
-
-    "<p>some cool text with <b>bold</b> and <i>italics</i><p>"
-
-     */
 })

@@ -72,12 +72,21 @@ const DOM_TEXT_TYPE = 3;
 const BLOCK_WITH_INLINE = new Set<string>
 BLOCK_WITH_INLINE.add('h1')
 BLOCK_WITH_INLINE.add('p')
+BLOCK_WITH_INLINE.add('codeblock')
 const INLINE_ELEMENT = new Set<string>
 INLINE_ELEMENT.add('b')
+INLINE_ELEMENT.add('strong')
+INLINE_ELEMENT.add('code')
 INLINE_ELEMENT.add('i')
 INLINE_ELEMENT.add('h1')
 INLINE_ELEMENT.add('p')
+INLINE_ELEMENT.add('codeblock')
+const PRE_FORMATTED_ELEMENT = new Set<string>
+PRE_FORMATTED_ELEMENT.add('codeblock')
 function xml_pretty_print2(el: Element, output:OutputFormatter):void {
+    if(PRE_FORMATTED_ELEMENT.has(el.nodeName)) {
+        console.log("doing preformatted",el, el.textContent)
+    }
     if(INLINE_ELEMENT.has(el.nodeName)) {
         output.startElementInline(el)
     } else {
