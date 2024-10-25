@@ -10,6 +10,16 @@
     "dialog:default",
     "fs:default",
     "fs:allow-app-write",
-    "shell:default"
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "npm-run",
+          "cmd": "npm",
+          "args": true,
+          "sidecar":false
+        }
+      ]
+    }
   ]
 }

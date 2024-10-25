@@ -8,6 +8,7 @@ import 'rtds-react/build/index.esm.css'
 import {FileInfo, FileType, Site} from "./model.js";
 import {FileListView} from "./FileListView.js";
 import {PageEditorWrapper} from "./PageEditor.js";
+import {Command} from "@tauri-apps/plugin-shell";
 
 const site = Site.cloneWith({
     files: [
@@ -49,7 +50,19 @@ export function App() {
         }
     }
     const doPreview = async () => {
-        console.log("file is", site.get('selectedFile'))
+        console.log("file is", site.get('selectedFile').get('filePath').get())
+        const path = site.get('selectedFile').get('filePath').get()
+        let result = await Command.create("npm-run", [
+            'run',
+            'automated',
+            "--",
+            `--infile=${path}`,
+            "--browser",
+        ],{
+            cwd:"/Users/josh/WebstormProjects/mdxml-tools"
+        }).execute()
+        console.log(result)
+        console.log(result.stdout)
     }
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
