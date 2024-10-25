@@ -32,7 +32,7 @@
     "clean": "rm -rf build",
     "build": "node build.js",
     "tsc": "tsc",
-    "dev": "mkdir -p build && cp -r public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build --external:icons",
+    "dev-browser": "mkdir -p build && cp -r public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build --external:icons",
     "tauri-dev": "tauri dev",
     "test": "vitest run --dir src",
     "tauri": "tauri",

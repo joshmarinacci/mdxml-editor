@@ -15,7 +15,9 @@
         and then yet some more text </p>
 
     <codeblock language="bash">
-        bash example
+        first line of bash
+        second line of bash
+        #bash comment
     </codeblock>
 
 </document>

@@ -14,12 +14,12 @@ const site = Site.cloneWith({
         {
             fileName: "example1.xml",
             fileType: "mdxml",
-            filePath: "examples/pages/example1.xml"
+            filePath: "example1.xml"
         },
         {
             fileName: "example2.xml",
             fileType: "mdxml",
-            filePath: "examples/pages/example2.xml"
+            filePath: "example2.xml"
         },
     ],
 })

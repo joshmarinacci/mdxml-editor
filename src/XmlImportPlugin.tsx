@@ -14,6 +14,7 @@ import {$setBlocksType} from "@lexical/selection";
 import {$createHeadingNode, HeadingTagType, $createQuoteNode} from "@lexical/rich-text"
 import {$createCodeNode} from "@lexical/code"
 import {$createListNode, $createListItemNode} from "@lexical/list"
+import {make_logger} from "josh_js_util";
 
 function print_xml_node(doc:ChildNode, indent:number) {
     console.log(`${makeTab(indent)} name = `,doc.nodeName, doc.nodeType)
@@ -31,7 +32,7 @@ XML_TO_LEXICAL.set('p',() => $createParagraphNode())
 XML_TO_LEXICAL.set('para',() => $createParagraphNode())
 XML_TO_LEXICAL.set('ul',() => $createListNode("bullet"))
 XML_TO_LEXICAL.set('li',() => $createListItemNode(false))
-XML_TO_LEXICAL.set('codeblock', () => $createCodeNode("bash"))
+XML_TO_LEXICAL.set('codeblock', () => $createCodeNode())
 XML_TO_LEXICAL.set('strong', () => $createParagraphNode())
 XML_TO_LEXICAL.set('em', () => $createParagraphNode())
 XML_TO_LEXICAL.set('b', () => $createParagraphNode())
@@ -55,6 +56,7 @@ TYPE_TO_FORMAT.set('em','italic')
 
 const skip_text = ['list']
 
+const logger = make_logger("XML_TO_NODES")
 function xml_to_nodes2(node: ChildNode, parent: ElementNode, strip_whitespace:boolean) {
     if(node.nodeType === Node.TEXT_NODE) {
         if(skip_text.includes(parent.getType())) {
@@ -86,11 +88,12 @@ function xml_to_nodes2(node: ChildNode, parent: ElementNode, strip_whitespace:bo
             }
             const cb = XML_TO_LEXICAL.get(node.nodeName) as Callback;
             const nd = cb()
+            let strip_whitespace = true
             if(node.nodeName === 'codeblock') {
-                console.log("is codeblock")
+                strip_whitespace = false
             }
             for(let ch of node.childNodes) {
-                xml_to_nodes2(ch,nd,true)
+                xml_to_nodes2(ch,nd,strip_whitespace)
             }
             parent.append(nd)
             return nd
