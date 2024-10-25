@@ -1,6 +1,7 @@
 import {HeadingNode} from "@lexical/rich-text"
 import {ElementNode, RootNode, TextNode} from "lexical";
 import {CodeNode} from "@lexical/code"
+import {s} from "vitest/dist/reporters-yx5ZTtEV.js";
 
 function lex_to_xml(node:ElementNode, xmlDoc: Document):Element {
     console.log("doing ",node.getType())
@@ -68,18 +69,20 @@ function lex_to_xml(node:ElementNode, xmlDoc: Document):Element {
 
 const DOM_ELEMENT_TYPE = 1;
 const DOM_TEXT_TYPE = 3;
+const BLOCK_WITH_INLINE = new Set<string>
+BLOCK_WITH_INLINE.add('h1')
+BLOCK_WITH_INLINE.add('p')
+const INLINE_ELEMENT = new Set<string>
+INLINE_ELEMENT.add('b')
+INLINE_ELEMENT.add('i')
+INLINE_ELEMENT.add('h1')
+INLINE_ELEMENT.add('p')
 function xml_pretty_print2(el: Element, output:OutputFormatter):void {
-    let str = `<${el.nodeName}`
-    for(let at of el.attributes) str += ` ${at.name}="${at.value}"`
-    str += ">"
-    if(el.nodeName === 'h1') {
-        output.addText(str)
-        output.setInline(true)
+    if(INLINE_ELEMENT.has(el.nodeName)) {
+        output.startElementInline(el)
     } else {
-        output.addText(str)
-        output.addText("\n")
+        output.startElementOutline(el)
     }
-    output.indent()
     for(let child of el.childNodes) {
         if(child.nodeType === DOM_ELEMENT_TYPE) {
             xml_pretty_print2(child as Element, output)
@@ -88,13 +91,13 @@ function xml_pretty_print2(el: Element, output:OutputFormatter):void {
             output.addText((child as unknown as Text).textContent +"")
         }
     }
-    output.outdent()
-    if(el.nodeName === 'h1') {
-        output.addText(`</${el.nodeName}>`)
-        output.setInline(false)
-        output.addText("\n")
+    if(INLINE_ELEMENT.has(el.nodeName)) {
+        output.endElementInline(el)
     } else {
-        output.addText(`</${el.nodeName}>`)
+        output.endElementOutline(el)
+    }
+    if(BLOCK_WITH_INLINE.has(el.nodeName)) {
+        output.appendText("\n")
     }
 }
 
@@ -138,6 +141,39 @@ class OutputFormatter {
 
     setInline(b: boolean) {
         this.inline = b
+    }
+
+    startElementInline(el: Element) {
+        let str = `<${el.nodeName}`
+        for(let at of el.attributes) str += ` ${at.name}="${at.value}"`
+        str += ">"
+        this.addText(str)
+        this.setInline(true)
+    }
+
+    endElementInline(el: Element) {
+        this.addText(`</${el.nodeName}>`)
+        this.setInline(false)
+    }
+
+    startElementOutline(el: Element) {
+        let str = `<${el.nodeName}`
+        for(let at of el.attributes) str += ` ${at.name}="${at.value}"`
+        str += ">"
+        if(!this.inline) {
+            str += "\n"
+        }
+        this.addText(str)
+        this.indent()
+    }
+
+    endElementOutline(el: Element) {
+        this.outdent()
+        this.addText(`</${el.nodeName}>\n`)
+    }
+
+    appendText(s1: string) {
+        this.lines.push(s1)
     }
 }
 
