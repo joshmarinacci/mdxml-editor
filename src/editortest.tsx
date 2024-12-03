@@ -1,12 +1,12 @@
 import {EditorState} from "prosemirror-state"
 import {EditorView} from "prosemirror-view"
-import {Node} from "prosemirror-model"
+import {Node, Schema, NodeSpec} from "prosemirror-model"
 // import {schema} from "prosemirror-schema-basic"
 import {useEffect, useRef} from "react";
 import {defaultMarkdownParser, defaultMarkdownSerializer, schema} from "prosemirror-markdown"
 import {history, redo, undo} from "prosemirror-history"
 import {keymap} from "prosemirror-keymap"
-import {baseKeymap, setBlockType} from "prosemirror-commands"
+import {baseKeymap, setBlockType, toggleMark} from "prosemirror-commands"
 
 
 import "./editortest.css"
@@ -19,12 +19,24 @@ paragraph of text
 
 another paragraph of text
 `
-let set = false
 const startdoc = defaultMarkdownParser.parse(test_markdown_doc)
 
 const other_doc = schema.node('doc',null, [
     schema.node('paragraph',null,[schema.text('text in paragraph')]),
 ])
+
+const YoutubeLinkNodeSpec:NodeSpec = {
+    attrs:{url: {default:"asdf"}},
+    inline:false,
+    draggable:true,
+}
+
+const MDXMLSchema = new Schema({
+    nodes:schema.spec.nodes.append(YoutubeLinkNodeSpec),
+})
+
+
+const make_strong = toggleMark(schema.marks.strong)
 
 
 function make_new_state_with_doc(doc) {
@@ -36,6 +48,7 @@ function make_new_state_with_doc(doc) {
             keymap({
                 "Mod-z":undo,
                 "Mod-y":redo,
+                "Mod-b":make_strong,
             }),
             keymap(baseKeymap)
         ]
@@ -113,6 +126,10 @@ export function  EditorTest () {
         view.current.updateState(make_new_state_with_doc(doc))
     }
 
+    const make_selection_bold = () => {
+        toggleMark(schema.marks.strong)(view.current.state, view.current.dispatch)
+        setBlockType(schema.nodes.paragraph)(view.current.state,view.current.dispatch)
+    }
     const make_selection_heading = () => {
         setBlockType(schema.nodes.heading, {level:1})(view.current.state,view.current.dispatch)
     }
@@ -127,6 +144,7 @@ export function  EditorTest () {
             <button onClick={switch_to_markdown}>code</button>
         </div>
         <div className={"toolbar"}>
+            <button onClick={make_selection_bold}>bold</button>
             <button onClick={make_selection_heading}>heading</button>
             <button onClick={make_selection_paragraph}>paragraph</button>
         </div>
