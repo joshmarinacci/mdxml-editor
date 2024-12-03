@@ -5,80 +5,102 @@ import {DialogContext, DialogContextImpl, PopupContext, PopupContextImpl,} from 
 
 import "./mainlayout.css"
 import 'rtds-react/build/index.esm.css'
-import {FileInfo, FileType, Site} from "./model.js";
 import {FileListView} from "./FileListView.js";
 import {PageEditorWrapper} from "./PageEditor.js";
 import {Command} from "@tauri-apps/plugin-shell";
-import {EditorTest} from "./editortest";
+import {MarkdownEditor, MarkdownEditorWrapper} from "./editortest";
+import {DocsetModel, PageModel} from "./model";
+import {useState} from "react";
+import {Label, useChanged} from "rtds-react";
 
-const site = Site.cloneWith({
-    files: [
-        {
-            fileName: "example1.xml",
-            fileType: "mdxml",
-            filePath: "example1.xml"
-        },
-        {
-            fileName: "example2.xml",
-            fileType: "mdxml",
-            filePath: "example2.xml"
-        },
-    ],
+// const site = Site.cloneWith({
+//     files: [
+//         {
+//             fileName: "example1.xml",
+//             fileType: "mdxml",
+//             filePath: "example1.xml"
+//         },
+//         {
+//             fileName: "example2.xml",
+//             fileType: "mdxml",
+//             filePath: "example2.xml"
+//         },
+//     ],
+// })
+// // @ts-ignore
+// site.set('selectedFile',null)
+
+const DummyDocset = DocsetModel.cloneWith({
+    title:"dummyDocset",
 })
-// @ts-ignore
-site.set('selectedFile',null)
-
 export function App() {
-    return <EditorTest/>
+    const [docset, setDocset] = useState<typeof DocsetModel>(DummyDocset)
+    const make_new_docset = async () => {
+        const docset = DocsetModel.cloneWith({
+            title:"untitled docset",
+        })
+        setDocset(docset)
+    }
+    const make_new_page = async () => {
+        const page = PageModel.cloneWith({
+            title:'new page',
+        })
+        docset.get('pages').push(page)
+    }
+    useChanged(docset)
+    // const doOpen = async () => {
+    //     const selected = await open({
+    //         multiple:false,
+    //     });
+    //     console.log("selected the file",selected)
+    //     if(selected) {
+    //         let ex = await exists(selected, {baseDir: BaseDirectory.AppData});
+    //         console.log(ex)
+    //         const configToml = await readTextFile(selected)
+    //         console.log("xml file is",configToml)
+    //         const filename = selected.substring(selected.lastIndexOf('/')+1)
+    //         let file = FileInfo.cloneWith({
+    //             filePath: selected,
+    //             fileName: filename,
+    //             fileType: 'mdxml'
+    //         })
+    //         site.get('files').clear()
+    //         site.get('files').push(file)
+    //     }
+    // }
+    // const doPreview = async () => {
+    //     console.log("file is", site.get('selectedFile').get('filePath').get())
+    //     const path = site.get('selectedFile').get('filePath').get()
+    //     let result = await Command.create("npm-run", [
+    //         'run',
+    //         'automated',
+    //         "--",
+    //         `--infile=${path}`,
+    //         "--browser",
+    //     ],{
+    //         cwd:"/Users/josh/WebstormProjects/mdxml-tools"
+    //     }).execute()
+    //     console.log(result)
+    //     console.log(result.stdout)
+    // }
+    console.log("list of pages",docset.get('pages').count())
+    return <DialogContext.Provider value={new DialogContextImpl()}>
+        <PopupContext.Provider value={new PopupContextImpl()}>
+            <div className={'main-layout'}>
+                <header>
+                    <button onClick={make_new_docset}>New Docset</button>
+                    <button onClick={make_new_page}>New Page</button>
+                    {/*<button onClick={doOpen}>open</button>*/}
+                    {/*<button onClick={doPreview}>preview</button>*/}
+                </header>
+                <div>
+                <div>
+                    <Label value={docset.get('title')}/>
+                </div>
+                <FileListView className={'file-list'} docset={docset}/>
+                </div>
+                <MarkdownEditorWrapper pages={docset.get('selectedPage')}/>
+            </div>
+        </PopupContext.Provider>
+    </DialogContext.Provider>
 }
-// export function App() {
-//     const doOpen = async () => {
-//         const selected = await open({
-//             multiple:false,
-//         });
-//         console.log("selected the file",selected)
-//         if(selected) {
-//             let ex = await exists(selected, {baseDir: BaseDirectory.AppData});
-//             console.log(ex)
-//             const configToml = await readTextFile(selected)
-//             console.log("xml file is",configToml)
-//             const filename = selected.substring(selected.lastIndexOf('/')+1)
-//             let file = FileInfo.cloneWith({
-//                 filePath: selected,
-//                 fileName: filename,
-//                 fileType: 'mdxml'
-//             })
-//             site.get('files').clear()
-//             site.get('files').push(file)
-//         }
-//     }
-//     const doPreview = async () => {
-//         console.log("file is", site.get('selectedFile').get('filePath').get())
-//         const path = site.get('selectedFile').get('filePath').get()
-//         let result = await Command.create("npm-run", [
-//             'run',
-//             'automated',
-//             "--",
-//             `--infile=${path}`,
-//             "--browser",
-//         ],{
-//             cwd:"/Users/josh/WebstormProjects/mdxml-tools"
-//         }).execute()
-//         console.log(result)
-//         console.log(result.stdout)
-//     }
-//     return <DialogContext.Provider value={new DialogContextImpl()}>
-//         <PopupContext.Provider value={new PopupContextImpl()}>
-//             <div className={'main-layout'}>
-//                 <header>{site.get('title').get()}
-//                     <button onClick={doOpen}>open</button>
-//                     <button onClick={doPreview}>preview</button>
-//                 </header>
-//                 <FileListView className={'file-list'} site={site}/>
-//                 <div className={'page-list'}>the page tree</div>
-//                 <PageEditorWrapper site={site}/>
-//             </div>
-//         </PopupContext.Provider>
-//     </DialogContext.Provider>
-//
-// }

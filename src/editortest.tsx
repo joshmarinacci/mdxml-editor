@@ -11,6 +11,8 @@ import {baseKeymap, setBlockType, toggleMark} from "prosemirror-commands"
 
 import "./editortest.css"
 import {repeat} from "./util";
+import {PageListModel, PageModel} from "./model";
+import {EditableLabel} from "rtds-react";
 
 const test_markdown_doc = `
 paragraph of text
@@ -78,14 +80,27 @@ function block_to_markdown(block: Node) {
     return "unknown"
 }
 
-export function  EditorTest () {
+export function MarkdownEditorWrapper(props:{pages:typeof PageListModel}) {
+    const pages = props.pages
+
+    if(pages.count() === 0) {
+        return <div>select a page</div>
+    }
+    if(pages.count() > 1) {
+        return <div>only edit one page at a time</div>
+    }
+    return <MarkdownEditor page={pages.get(0)}/>
+}
+
+export function  MarkdownEditor (props:{page:typeof PageModel}) {
+    // console.log("page is",props.page)
     const viewHost = useRef(null);
     const view = useRef(null)
     useEffect(()=>{
         console.log("first render")
-        console.log("schema", schema)
+        // console.log("schema", schema)
         const state = make_new_state_with_doc(other_doc)
-        console.log("state is",state)
+        // console.log("state is",state)
         view.current = new EditorView(viewHost.current, {
             state:state,
             dispatchTransaction:(transaction) => {
@@ -95,7 +110,7 @@ export function  EditorTest () {
             }
         })
         return () => view.current.destroy()
-    },[])
+    },[props.page])
 
     useEffect(() => {
         // console.log("every render")
@@ -137,6 +152,9 @@ export function  EditorTest () {
         setBlockType(schema.nodes.paragraph)(view.current.state,view.current.dispatch)
     }
     return <div className={"editor"}>
+        <div className={'toolbar'}>
+            <EditableLabel value={props.page.get('title')}/>
+        </div>
         <div className={"toolbar"}>
             <button onClick={load_from_markdown}>load markdown</button>
             <button onClick={save_to_markdown}>save</button>

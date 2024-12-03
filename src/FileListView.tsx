@@ -1,21 +1,22 @@
-import {FileInfo, Site} from "./model.js";
 import {useState} from "react";
 import {ListItemRenderer, ListView, StringRenderer, useChanged} from "rtds-react";
 import {ObjMaybe} from "rtds-core";
+import {DocsetModel, PageModel} from "./model";
 
-const rend:ListItemRenderer<typeof FileInfo> = (value) => {
-    return <span className={'file-item'}>{value.get('fileName').get()}</span>
+const rend:ListItemRenderer<typeof PageModel> = (value) => {
+    return <span className={'file-item'}>{value.get('title').get()}</span>
 }
 
-export function FileListView(props: { className: string, site: typeof Site }) {
-    let selected = props.site.get('selectedFile')
-    useChanged(props.site)
+export function FileListView(props: { className: string, docset: typeof DocsetModel }) {
+    // let selected = props.docset.get('selectedFile')
+    // useChanged(props.site)
     return <div className={'file-list'}>
-        <ListView data={props.site.get('files')}
+        <ListView data={props.docset.get('pages')}
                   itemRenderer={rend}
-                  selected={selected}
+                  selected={props.docset.get('selectedPage')}
                   onSelect={(e) => {
-                      props.site.set('selectedFile',e)
+                      props.docset.get('selectedPage').clear()
+                      props.docset.get('selectedPage').push(e)
                   }}
         />
     </div>
