@@ -3,10 +3,10 @@ import {EditorView} from "prosemirror-view"
 import {Node} from "prosemirror-model"
 // import {schema} from "prosemirror-schema-basic"
 import {useEffect, useRef} from "react";
-import {defaultMarkdownParser, schema} from "prosemirror-markdown"
+import {defaultMarkdownParser, defaultMarkdownSerializer, schema} from "prosemirror-markdown"
 import {history, redo, undo} from "prosemirror-history"
 import {keymap} from "prosemirror-keymap"
-import {baseKeymap} from "prosemirror-commands"
+import {baseKeymap, setBlockType} from "prosemirror-commands"
 
 
 import "./editortest.css"
@@ -92,10 +92,6 @@ export function  EditorTest () {
     const load_from_markdown = () => {
         const state = make_new_state_with_doc(startdoc)
         view.current.updateState(state)
-        // view.current.destroy()
-        // view.current = new EditorView(viewHost.current, {
-        //     state:state,
-        // })
     }
     const save_to_markdown = () => {
         const editor:EditorView = view.current as unknown as EditorView
@@ -106,10 +102,33 @@ export function  EditorTest () {
         console.log(doc.children.map(ch => block_to_markdown(ch)).join("\n\n"))
         // setView(new ProseMirrorView(ref.current,"some content"))
     }
+    const switch_to_markdown = () => {
+        const doc = view.current.state.doc
+        console.log("doc is",doc)
+        const text = defaultMarkdownSerializer.serialize(doc)
+        console.log("markdown is",text)
+    }
+    const switch_to_visual = () => {
+        const doc = defaultMarkdownParser.parse(test_markdown_doc)
+        view.current.updateState(make_new_state_with_doc(doc))
+    }
+
+    const make_selection_heading = () => {
+        setBlockType(schema.nodes.heading, {level:1})(view.current.state,view.current.dispatch)
+    }
+    const make_selection_paragraph = () => {
+        setBlockType(schema.nodes.paragraph)(view.current.state,view.current.dispatch)
+    }
     return <div className={"editor"}>
         <div className={"toolbar"}>
             <button onClick={load_from_markdown}>load markdown</button>
             <button onClick={save_to_markdown}>save</button>
+            <button onClick={switch_to_visual}>visual</button>
+            <button onClick={switch_to_markdown}>code</button>
+        </div>
+        <div className={"toolbar"}>
+            <button onClick={make_selection_heading}>heading</button>
+            <button onClick={make_selection_paragraph}>paragraph</button>
         </div>
         <div ref={viewHost} className="content"/>
     </div>
