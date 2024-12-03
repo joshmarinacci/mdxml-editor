@@ -5,3 +5,11 @@ export function makeTab(indent: number) {
     }
     return str
 }
+
+export function repeat(s: string, attr: number) {
+    let out = ""
+    for (let i = 0; i < attr; i++) {
+        out += s
+    }
+    return s
+}

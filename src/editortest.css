@@ -1,0 +1,16 @@
+.editor {
+    border: 0px solid red;
+    max-width: 40rem;
+    min-height: 10em;
+}
+
+.ProseMirror {
+    border: 1px solid red;
+    max-width: 40rem;
+    min-height: 10em;
+}
+.toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
