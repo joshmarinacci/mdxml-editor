@@ -3,7 +3,7 @@ import {Schema} from "rtds-core";
 const S = new Schema()
 
 // @ts-ignore
-export const FileType = S.enum(['mdxml','directory','image','other'],'other')
+export const FileType = S.enum(['mdxml','directory','image','other','docset'],'other')
 export const FileInfoModel = S.map({
     fileName: S.string(),
     filePath: S.string(),
