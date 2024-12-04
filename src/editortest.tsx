@@ -13,6 +13,7 @@ import "./editortest.css"
 import {repeat} from "./util";
 import {PageListModel, PageModel} from "./model";
 import {EditableLabel} from "rtds-react";
+import {StorageManager} from "./storage";
 
 const test_markdown_doc = `
 paragraph of text
@@ -93,7 +94,9 @@ export function MarkdownEditorWrapper(props:{pages:typeof PageListModel}) {
 }
 
 export function  MarkdownEditor (props:{page:typeof PageModel}) {
-    // console.log("page is",props.page)
+    const page = props.page
+
+    console.log("page is",props.page)
     const viewHost = useRef(null);
     const view = useRef(null)
     useEffect(()=>{
@@ -111,6 +114,15 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
         })
         return () => view.current.destroy()
     },[props.page])
+    useEffect(() => {
+        console.log("page changed")
+        const ss = StorageManager.getStorageSystem()
+        ss.loadPageDoc(page).then((content:Node) => {
+            console.log("got content for the page",content)
+            const state = make_new_state_with_doc(content)
+            view.current.updateState(state)
+        })
+    }, [props.page]);
 
     useEffect(() => {
         // console.log("every render")

@@ -9,9 +9,10 @@ import {FileListView} from "./FileListView.js";
 import {PageEditorWrapper} from "./PageEditor.js";
 import {Command} from "@tauri-apps/plugin-shell";
 import {MarkdownEditor, MarkdownEditorWrapper} from "./editortest";
-import {DocsetModel, PageModel} from "./model";
+import {Docset, DocsetModel, PageModel} from "./model";
 import {useState} from "react";
 import {Label, useChanged} from "rtds-react";
+import {StorageManager} from "./storage";
 
 // const site = Site.cloneWith({
 //     files: [
@@ -35,17 +36,24 @@ const DummyDocset = DocsetModel.cloneWith({
 })
 export function App() {
     const [docset, setDocset] = useState<typeof DocsetModel>(DummyDocset)
+    const select_docset = async () => {
+        const ss = StorageManager.getStorageSystem()
+        const maybe_docset = await ss.selectDocset()
+        if(maybe_docset){
+            let docset = maybe_docset as Docset
+            console.log("new docset is",docset)
+            setDocset(docset)
+        }
+    }
     const make_new_docset = async () => {
-        const docset = DocsetModel.cloneWith({
-            title:"untitled docset",
+        const docset = await StorageManager.getStorageSystem().createNewDocset({
+            title:'untitled docset',
         })
         setDocset(docset)
     }
     const make_new_page = async () => {
-        const page = PageModel.cloneWith({
-            title:'new page',
-        })
-        docset.get('pages').push(page)
+        const ss = StorageManager.getStorageSystem()
+        await ss.addNewPage(docset)
     }
     useChanged(docset)
     // const doOpen = async () => {
@@ -90,7 +98,7 @@ export function App() {
                 <header>
                     <button onClick={make_new_docset}>New Docset</button>
                     <button onClick={make_new_page}>New Page</button>
-                    {/*<button onClick={doOpen}>open</button>*/}
+                    <button onClick={select_docset}>open</button>
                     {/*<button onClick={doPreview}>preview</button>*/}
                 </header>
                 <div>

@@ -1,4 +1,4 @@
-import {FileInfo, Site} from "./model.js";
+import {FileInfoModel} from "./model.js";
 import {forceDownloadBlob} from "josh_web_util"
 import {useChanged} from "rtds-react";
 import {useEffect, useRef} from "react";
@@ -66,7 +66,7 @@ async function saveDoc(filename: string, xml_str: string) {
     }
 }
 
-function PageEditor(props:{file:typeof FileInfo}) {
+function PageEditor(props:{file:typeof FileInfoModel}) {
     const editorStateRef = useRef(undefined)
     const [editor] = useLexicalComposerContext()
 
