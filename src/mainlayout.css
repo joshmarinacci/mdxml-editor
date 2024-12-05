@@ -1,10 +1,10 @@
 .main-layout {
     display: grid;
     grid-template-columns: 200px 1fr;
-    grid-template-rows: min-content 200px;
+    grid-template-rows: 4rem 1fr;
     --panel-background: #d8d8d8;
     --panel-border: 1px solid #333;
-    min-height: 95vh;
+    height: 100vh;
 }
 
 .main-layout header {
@@ -38,7 +38,8 @@ li.selected .file-item {
 .main-layout .editor {
     border: var(--panel-border);
     background-color: white;
-    grid-row: 2/ span 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
     grid-column: 2;
 }
 

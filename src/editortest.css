@@ -1,16 +1,78 @@
 .editor {
     border: 0px solid red;
     max-width: 40rem;
-    min-height: 10em;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    overflow: hidden;
 }
 
 .ProseMirror {
     border: 1px solid red;
     max-width: 40rem;
     min-height: 10em;
+    /*max-height: 20em;*/
+    padding: 1rem;
+
+
+    /* reset derived from https://www.joshwcomeau.com/css/custom-css-reset/ */
+
+    /* 1. Use a more-intuitive box-sizing model */
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    * {
+        /* 2. Remove default margin */
+        /*margin: 0;*/
+        /* 3. Add accessible line-height */
+        line-height: 1.5;
+    }
+
+    /* 7. Avoid text overflows */
+    p, h1, h2, h3, h4, h5, h6 {
+        overflow-wrap: break-word;
+    }
+
+    /* 8. Improve line wrapping */
+    p {
+        text-wrap: pretty;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        text-wrap: balance;
+    }
+
+
+    /* styles to make the text more readable while editing */
+    h1, h2, h3, h4, h5, h6 {
+        padding: 1rem 0;
+    }
+
+    p code {
+        font-family: monospace;
+        background-color: #ffdfe6;
+    }
+
+    pre {
+        white-space: pre-wrap;
+        padding: 0.5rem;
+        margin: 0.5rem;
+        background-color: #eee;
+    }
+    ul {
+        padding-left: 1rem;
+        /*border: 1px solid red;*/
+    }
+
+
 }
 .toolbar {
     display: flex;
     flex-direction: row;
     justify-content: start;
+}
+
+.content {
+    overflow: scroll;
+    flex: 1.0;
 }
