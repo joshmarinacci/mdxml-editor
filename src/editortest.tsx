@@ -166,6 +166,7 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
     }
     return <div className={"editor"}>
         <div className={'toolbar'}>
+            <label>Title</label>
             <EditableLabel value={props.page.get('title')}/>
         </div>
         <div className={"toolbar"}>
