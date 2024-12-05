@@ -1,11 +1,13 @@
 import { Node } from "prosemirror-model";
-import {Docset, DocsetModel, FileInfoModel, PageModel, PageType} from "./model";
+import {Docset, DocsetModel, FileInfoModel, FileType, PageModel, PageType} from "./model";
 import {StorageSystem} from "./storage";
 import { open } from '@tauri-apps/plugin-dialog';
-import { exists, BaseDirectory, readTextFile } from '@tauri-apps/plugin-fs';
+import { exists, BaseDirectory, readTextFile, readDir } from '@tauri-apps/plugin-fs';
+import {defaultMarkdownParser} from "prosemirror-markdown";
 
-export function xmlToDocset(xml: Document):Docset {
+export async function xmlToDocset(filepath:string, xml: Document):Promise<Docset> {
     console.log('converting xml to a docset',xml);
+    console.log("filepath is",filepath)
     // if (!xml.root) throw new Error("docset.xml missing root")
     // if (!xml.root.attributes) throw new Error("docset.xml missing attributes")
     const root = xml.getRootNode().firstChild as Element
@@ -16,8 +18,22 @@ export function xmlToDocset(xml: Document):Docset {
     for(const child of root.children) {
         const page_node = child as Element
         console.log("child is",child)
+        const title = child.attributes.getNamedItem('title')?.textContent
+        const relative_filepath = child.attributes.getNamedItem('src')?.textContent
+        console.log("title",title)
+        console.log("relative filepath",relative_filepath)
+        const final_filepath = filepath + '/' + relative_filepath
+        console.log("final filepath",final_filepath)
+        console.log("exists?", await exists(final_filepath))
+        const content = await readTextFile(final_filepath)
+        console.log("page content is",content)
         const page = PageModel.cloneWith({
-            title:child.attributes.getNamedItem('title')?.textContent,
+            title:title,
+            file:{
+                fileName:relative_filepath,
+                filePath:final_filepath,
+                fileType: "other",
+            }
         })
         docset.get('pages').push(page);
     }
@@ -42,16 +58,22 @@ class TauriStorage implements StorageSystem {
     async selectDocset(): Promise<Docset | undefined> {
         const selected = await open({
             multiple:false,
+            directory:true,
+            recursive:true,
+            canCreateDirectories:true,
+            title:"Select Docset",
         });
         console.log("selected the file",selected)
         if(selected) {
             let ex = await exists(selected, {baseDir: BaseDirectory.AppData});
-            console.log(ex)
-            const rawData = await readTextFile(selected)
+            console.log('exists',ex)
+            const dirlist = await readDir(selected);
+            console.log(dirlist)
+            const rawData = await readTextFile(selected + "/docset.xml")
             // console.log("raw xml file is",rawData)
             const xml_doc = new DOMParser().parseFromString(rawData, "text/xml")
             // console.log("parsed xml doc is", xml_doc)
-            const docset:Docset = xmlToDocset(xml_doc)
+            const docset:Docset = await xmlToDocset(selected,xml_doc)
             return docset
 
             // const filename = selected.substring(selected.lastIndexOf('/')+1)
@@ -78,8 +100,15 @@ class TauriStorage implements StorageSystem {
     saveAll(docset: Docset): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    loadPageDoc(page: PageType): Promise<Node> {
-        throw new Error("Method not implemented.");
+    async loadPageDoc(page: PageType): Promise<Node> {
+        console.log("loading content for",page.get('title').get(), page.get('file').get('filePath').get())
+        const pth = page.get('file').get('filePath').get()
+        console.log("exists?", await exists(pth))
+        const content = await readTextFile(pth)
+        console.log("content is",content)
+        const startdoc = defaultMarkdownParser.parse(content)
+        console.log("parsed",startdoc)
+        return startdoc
     }
 
 }

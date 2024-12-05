@@ -23,6 +23,11 @@
       "csp": null
     }
   },
+  "plugins": {
+    "persisted-scope": {
+      "disable": "true"
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",
