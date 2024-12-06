@@ -13,7 +13,7 @@ import {Docset, DocsetModel, PageModel} from "./model";
 import {useState} from "react";
 import {Label, useChanged} from "rtds-react";
 import {StorageManager} from "./storage";
-import {TauriStorageManager} from "./tauristorage";
+import {TauriStorage} from "./tauristorage";
 
 // const site = Site.cloneWith({
 //     files: [
@@ -37,17 +37,15 @@ const DummyDocset = DocsetModel.cloneWith({
 })
 
 
-function getStorage() {
-    // return StorageManager.getStorageSystem()
-    return TauriStorageManager.getStorageSystem()
-}
+StorageManager.registerStorageSystem(new TauriStorage())
+
 
 new EventSource('/esbuild').addEventListener('change', () => location.reload())
 
 export function App() {
     const [docset, setDocset] = useState<typeof DocsetModel>(DummyDocset)
     const select_docset = async () => {
-        const maybe_docset = await getStorage().selectDocset()
+        const maybe_docset = await StorageManager.getStorageSystem().selectDocset()
         if(maybe_docset){
             let docset = maybe_docset as Docset
             console.log("new docset is",docset)
@@ -55,13 +53,13 @@ export function App() {
         }
     }
     const make_new_docset = async () => {
-        const docset = await getStorage().createNewDocset({
+        const docset = await StorageManager.getStorageSystem().createNewDocset({
             title:'untitled docset',
         })
         setDocset(docset)
     }
     const make_new_page = async () => {
-        await getStorage().addNewPage(docset)
+        await StorageManager.getStorageSystem().addNewPage(docset)
     }
     useChanged(docset)
     // const doOpen = async () => {

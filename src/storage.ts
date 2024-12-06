@@ -75,11 +75,14 @@ class NonTauriStorageSystemStub implements StorageSystem {
 
 }
 
-const stub = new NonTauriStorageSystemStub()
+let stub:StorageSystem
 
 export class StorageManager {
     static getStorageSystem():StorageSystem {
         return stub
+    }
+    static registerStorageSystem(storage: StorageSystem) {
+        stub = storage
     }
 }
 

@@ -14,7 +14,6 @@ import {repeat} from "./util";
 import {PageListModel, PageModel} from "./model";
 import {EditableLabel} from "rtds-react";
 import {StorageManager} from "./storage";
-import {TauriStorageManager} from "./tauristorage";
 
 const test_markdown_doc = `
 paragraph of text
@@ -40,7 +39,9 @@ const MDXMLSchema = new Schema({
 })
 
 
-const make_strong = toggleMark(schema.marks.strong)
+const make_strong_command = toggleMark(schema.marks.strong)
+const make_emphasized_command = toggleMark(schema.marks.emphasized)
+const make_inlinecode_command = toggleMark(schema.marks.code)
 
 
 function make_new_state_with_doc(doc) {
@@ -52,7 +53,9 @@ function make_new_state_with_doc(doc) {
             keymap({
                 "Mod-z":undo,
                 "Mod-y":redo,
-                "Mod-b":make_strong,
+                "Mod-b":make_strong_command,
+                "Mod-i":make_emphasized_command,
+                "Mod-e":make_inlinecode_command
             }),
             keymap(baseKeymap)
         ]
@@ -117,7 +120,7 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
     },[props.page])
     useEffect(() => {
         console.log("page changed")
-        const ss = TauriStorageManager.getStorageSystem()
+        const ss = StorageManager.getStorageSystem()
         ss.loadPageDoc(page).then((content:Node) => {
             console.log("got content for the page",content)
             const state = make_new_state_with_doc(content)
@@ -154,12 +157,21 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
         view.current.updateState(make_new_state_with_doc(doc))
     }
 
-    const make_selection_bold = () => {
+    const make_strong_action = () => {
         toggleMark(schema.marks.strong)(view.current.state, view.current.dispatch)
-        setBlockType(schema.nodes.paragraph)(view.current.state,view.current.dispatch)
+        // setBlockType(schema.nodes.paragraph)(view.current.state,view.current.dispatch)
+    }
+    const make_em_action = () => {
+        toggleMark(schema.marks.em)(view.current.state, view.current.dispatch)
+    }
+    const make_inlinecode_action = () => {
+        toggleMark(schema.marks.code)(view.current.state, view.current.dispatch)
     }
     const make_selection_heading = () => {
         setBlockType(schema.nodes.heading, {level:1})(view.current.state,view.current.dispatch)
+    }
+    const make_selection_codeblock = () => {
+        setBlockType(schema.nodes.code_block, {})(view.current.state,view.current.dispatch)
     }
     const make_selection_paragraph = () => {
         setBlockType(schema.nodes.paragraph)(view.current.state,view.current.dispatch)
@@ -176,8 +188,13 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
             <button onClick={switch_to_markdown}>code</button>
         </div>
         <div className={"toolbar"}>
-            <button onClick={make_selection_bold}>bold</button>
+            <button onClick={make_strong_action}>strong</button>
+            <button onClick={make_em_action}>emphasized</button>
+            <button onClick={make_inlinecode_action}>code</button>
+        </div>
+        <div className={"toolbar"}>
             <button onClick={make_selection_heading}>heading</button>
+            <button onClick={make_selection_codeblock}>code block</button>
             <button onClick={make_selection_paragraph}>paragraph</button>
         </div>
         <div ref={viewHost} className="content"/>

@@ -54,7 +54,7 @@ export async function xmlToDocset(filepath:string, xml: Document):Promise<Docset
 }
 
 
-class TauriStorage implements StorageSystem {
+export class TauriStorage implements StorageSystem {
     async selectDocset(): Promise<Docset | undefined> {
         const selected = await open({
             multiple:false,
@@ -111,12 +111,4 @@ class TauriStorage implements StorageSystem {
         return startdoc
     }
 
-}
-
-
-
-export class TauriStorageManager {
-    static getStorageSystem():StorageSystem {
-        return new TauriStorage();
-    }
 }
