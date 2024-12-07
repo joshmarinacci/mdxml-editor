@@ -2,8 +2,8 @@ import { Node } from "prosemirror-model";
 import {Docset, DocsetModel, FileInfoModel, FileType, PageModel, PageType} from "./model";
 import {StorageSystem} from "./storage";
 import { open } from '@tauri-apps/plugin-dialog';
-import { exists, BaseDirectory, readTextFile, readDir } from '@tauri-apps/plugin-fs';
-import {defaultMarkdownParser} from "prosemirror-markdown";
+import {exists, BaseDirectory, readTextFile, readDir, writeTextFile} from '@tauri-apps/plugin-fs';
+import {defaultMarkdownParser, defaultMarkdownSerializer} from "prosemirror-markdown";
 
 export async function xmlToDocset(filepath:string, xml: Document):Promise<Docset> {
     console.log('converting xml to a docset',xml);
@@ -109,6 +109,16 @@ export class TauriStorage implements StorageSystem {
         const startdoc = defaultMarkdownParser.parse(content)
         console.log("parsed",startdoc)
         return startdoc
+    }
+    async savePageDoc(page: PageType, doc: Node): Promise<void> {
+        console.log("saving page doc",page, 'with content',doc)
+        const raw_markdown = defaultMarkdownSerializer.serialize(doc)
+        console.log(raw_markdown)
+        const pth = page.get('file').get('filePath').get()
+        console.log("exists?", await exists(pth))
+        await writeTextFile(pth,raw_markdown)
+        console.log("wrote to file")
+        return Promise.resolve()
     }
 
 }

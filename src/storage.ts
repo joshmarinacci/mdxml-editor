@@ -13,6 +13,7 @@ export interface StorageSystem {
     addNewPage(docset: Docset):Promise<PageType>;
     saveAll(docset: Docset):Promise<void>;
     loadPageDoc(page: PageType): Promise<Node>;
+    savePageDoc(page: PageType, doc: Node): Promise<void>;
 }
 
 class NonTauriStorageSystemStub implements StorageSystem {
@@ -52,6 +53,11 @@ class NonTauriStorageSystemStub implements StorageSystem {
             return Promise.resolve(startdoc)
         }
 
+    }
+
+    savePageDoc(page: PageType, doc: Node): Promise<void> {
+        console.log("pretending to save the page",page)
+        return Promise.resolve()
     }
     selectDocset(): Promise<Docset | undefined> {
         return Promise.resolve(this.docset)

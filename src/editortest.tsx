@@ -137,15 +137,10 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
     //     const state = make_new_state_with_doc(startdoc)
     //     view.current.updateState(state)
     // }
-    // const save_to_markdown = () => {
-    //     const editor:EditorView = view.current as unknown as EditorView
-    //     console.log('current doc is', editor.state.doc)
-    //     const doc = editor.state.doc
-    //     console.log("Doc is",doc)
-    //     console.log("type", doc.type, 'text',doc.text, 'children',doc.children)
-    //     console.log(doc.children.map(ch => block_to_markdown(ch)).join("\n\n"))
-    //     // setView(new ProseMirrorView(ref.current,"some content"))
-    // }
+    const save_to_markdown = async () => {
+        const editor:EditorView = view.current as unknown as EditorView
+        await StorageManager.getStorageSystem().savePageDoc(page, editor.state.doc)
+    }
     const switch_to_markdown = () => {
         const doc = view.current.state.doc
         console.log("doc is",doc)
@@ -183,7 +178,7 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
         </div>
         <div className={"toolbar"}>
             {/*<button onClick={load_from_markdown}>load markdown</button>*/}
-            {/*<button onClick={save_to_markdown}>save</button>*/}
+            <button onClick={save_to_markdown}>save</button>
             <button onClick={switch_to_visual}>visual</button>
             <button onClick={switch_to_markdown}>code</button>
         </div>
