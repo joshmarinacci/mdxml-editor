@@ -67,6 +67,10 @@
         /*border: 1px solid red;*/
     }
 
+    .cm-content {
+        border: 1px solid red;
+    }
+
 
 }
 .toolbar {

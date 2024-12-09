@@ -1,43 +1,24 @@
 import './App.css'
-import { open } from '@tauri-apps/plugin-dialog';
-import { exists, BaseDirectory, readTextFile } from '@tauri-apps/plugin-fs';
 import {DialogContext, DialogContextImpl, PopupContext, PopupContextImpl,} from 'josh_react_util'
 
 import "./mainlayout.css"
 import 'rtds-react/build/index.esm.css'
 import {FileListView} from "./FileListView.js";
-import {PageEditorWrapper} from "./PageEditor.js";
-import {Command} from "@tauri-apps/plugin-shell";
-import {MarkdownEditor, MarkdownEditorWrapper} from "./editortest";
+import {MarkdownEditorWrapper} from "./editortest";
 import {Docset, DocsetModel, PageModel} from "./model";
 import {useState} from "react";
 import {Label, useChanged} from "rtds-react";
-import {StorageManager} from "./storage";
+import {NonTauriStorageSystemStub, StorageManager} from "./storage";
 import {TauriStorage} from "./tauristorage";
 
-// const site = Site.cloneWith({
-//     files: [
-//         {
-//             fileName: "example1.xml",
-//             fileType: "mdxml",
-//             filePath: "example1.xml"
-//         },
-//         {
-//             fileName: "example2.xml",
-//             fileType: "mdxml",
-//             filePath: "example2.xml"
-//         },
-//     ],
-// })
-// // @ts-ignore
-// site.set('selectedFile',null)
 
 const DummyDocset = DocsetModel.cloneWith({
     title:"dummyDocset",
 })
 
 
-StorageManager.registerStorageSystem(new TauriStorage())
+// StorageManager.registerStorageSystem(new TauriStorage())
+StorageManager.registerStorageSystem(new NonTauriStorageSystemStub())
 
 
 new EventSource('/esbuild').addEventListener('change', () => location.reload())

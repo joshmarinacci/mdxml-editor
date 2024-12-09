@@ -16,7 +16,7 @@ export interface StorageSystem {
     savePageDoc(page: PageType, doc: Node): Promise<void>;
 }
 
-class NonTauriStorageSystemStub implements StorageSystem {
+export class NonTauriStorageSystemStub implements StorageSystem {
     private docset: Docset
     private page_to_content: Map<string, string>;
     constructor() {

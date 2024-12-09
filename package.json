@@ -8,6 +8,9 @@
     "build/*"
   ],
   "dependencies": {
+    "@codemirror/commands": "^6.7.1",
+    "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/view": "^6.35.2",
     "@lexical/react": "^0.17.0",
     "@lexical/table": "^0.17.0",
     "@tauri-apps/api": "^1",

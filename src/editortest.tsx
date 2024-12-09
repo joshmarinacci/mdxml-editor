@@ -14,6 +14,7 @@ import {repeat} from "./util";
 import {PageListModel, PageModel} from "./model";
 import {EditableLabel} from "rtds-react";
 import {StorageManager} from "./storage";
+import {arrowHandlers, CodeBlockView} from "./blockcodeview";
 
 const test_markdown_doc = `
 paragraph of text
@@ -26,6 +27,7 @@ const startdoc = defaultMarkdownParser.parse(test_markdown_doc)
 
 const other_doc = schema.node('doc',null, [
     schema.node('paragraph',null,[schema.text('text in paragraph')]),
+    schema.node('code_block',null,[schema.text('this is a code block')]),
 ])
 
 const YoutubeLinkNodeSpec:NodeSpec = {
@@ -57,7 +59,8 @@ function make_new_state_with_doc(doc) {
                 "Mod-i":make_emphasized_command,
                 "Mod-e":make_inlinecode_command
             }),
-            keymap(baseKeymap)
+            keymap(baseKeymap),
+            arrowHandlers,
         ]
     })
     return state
@@ -114,7 +117,8 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
                 console.log("transaction happened")
                 let newstate = view.current.state.apply(transaction)
                 view.current.updateState(newstate)
-            }
+            },
+            nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
         })
         return () => view.current.destroy()
     },[props.page])
