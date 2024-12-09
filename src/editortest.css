@@ -59,7 +59,10 @@
         margin: 0.5rem;
         background-color: #eee;
     }
-    ul {
+    pre code {
+        font-family: monospace;
+    }
+    ul, ol {
         padding-left: 1rem;
         /*border: 1px solid red;*/
     }
