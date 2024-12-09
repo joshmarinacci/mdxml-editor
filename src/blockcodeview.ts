@@ -10,6 +10,7 @@ import { undo, redo} from "prosemirror-history"
 import { keymap } from "prosemirror-keymap"
 import { EditorView } from "prosemirror-view";
 import {EditorState, Selection, TextSelection} from "prosemirror-state"
+import {GetPosCallback} from "./util";
 
 let baseNodes = baseSchema.spec.nodes
 const schema = new Schema({
@@ -23,11 +24,11 @@ type DirType = "up" | "down" | "left" | "right" | "forward" | "backward"
 export class CodeBlockView {
     private node: Node;
     private view: EditorView;
-    private cm: any;
+    private cm: CodeMirror;
     private updating: boolean;
-    private dom: any;
-    private getPos: any;
-    constructor(node:Node, view:EditorView, getPos) {
+    public dom: HTMLElement;
+    private getPos: GetPosCallback;
+    constructor(node:Node, view:EditorView, getPos:GetPosCallback) {
         // Store for later
         this.node = node
         this.view = view

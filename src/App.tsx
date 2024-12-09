@@ -17,8 +17,13 @@ const DummyDocset = DocsetModel.cloneWith({
 })
 
 
-// StorageManager.registerStorageSystem(new TauriStorage())
-StorageManager.registerStorageSystem(new NonTauriStorageSystemStub())
+if('__TAURI_INTERNALS__' in window) {
+    console.log("running under Tauri")
+    StorageManager.registerStorageSystem(new TauriStorage())
+} else {
+    console.log("does not have internals")
+    StorageManager.registerStorageSystem(new NonTauriStorageSystemStub())
+}
 
 
 new EventSource('/esbuild').addEventListener('change', () => location.reload())
