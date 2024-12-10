@@ -14,7 +14,24 @@ import {repeat} from "./util";
 import {PageListModel, PageModel} from "./model";
 import {EditableLabel} from "rtds-react";
 import {StorageManager} from "./storage";
-import {arrowHandlers, CodeBlockView} from "./blockcodeview";
+// import {arrowHandlers, CodeBlockView} from "./blockcodeview";
+
+import {
+    codeBlockArrowHandlers,
+    codeMirrorBlockPlugin,
+    defaultSettings,
+    languageLoaders,
+    legacyLanguageLoaders
+} from "prosemirror-codemirror-block"
+
+const codeBlockSpec = schema.spec.nodes.get("code_block");
+const SCHEMA = new Schema({
+    nodes: schema.spec.nodes.update("code_block",{
+        ...(codeBlockSpec || {}),
+        attrs: {...codeBlockSpec?.attrs, lang:{default:null}}
+    }),
+    marks:schema.spec.marks
+})
 
 const test_markdown_doc = `
 paragraph of text
@@ -29,6 +46,34 @@ const other_doc = schema.node('doc',null, [
     schema.node('paragraph',null,[schema.text('text in paragraph')]),
     schema.node('code_block',null,[schema.text('this is a code block')]),
 ])
+
+const codeBlockDoc = {
+    content: [
+        {
+            content: [
+                {
+                    text: "prosemirror-codemirror-block",
+                    type: "text",
+                },
+            ],
+            type: "paragraph",
+        },
+        {
+            content: [
+                {
+                    text: "const jsFun = (arg) => {\n  console.log(arg); \n}",
+                    type: "text",
+                },
+            ],
+            attrs: {
+                lang: "javascript",
+            },
+            type: "code_block",
+        },
+    ],
+    type: "doc",
+};
+
 
 const YoutubeLinkNodeSpec:NodeSpec = {
     attrs:{url: {default:"asdf"}},
@@ -45,12 +90,18 @@ const make_strong_command = toggleMark(schema.marks.strong)
 const make_emphasized_command = toggleMark(schema.marks.emphasized)
 const make_inlinecode_command = toggleMark(schema.marks.code)
 
-
-function make_new_state_with_doc(doc) {
+function make_new_state_with_doc(doc:Node) {
     const state = EditorState.create({
-        schema: schema,
+        schema: SCHEMA,
         doc: doc,
+        // doc: SCHEMA.nodeFromJSON(codeBlockDoc),
         plugins:[
+            codeMirrorBlockPlugin({
+                ...defaultSettings,
+                languageLoaders: {...languageLoaders, ...legacyLanguageLoaders},
+                undo,
+                redo,
+            }),
             history(),
             keymap({
                 "Mod-z":undo,
@@ -60,7 +111,8 @@ function make_new_state_with_doc(doc) {
                 "Mod-e":make_inlinecode_command
             }),
             keymap(baseKeymap),
-            arrowHandlers,
+            keymap(codeBlockArrowHandlers),
+            // arrowHandlers,
         ]
     })
     return state
@@ -108,9 +160,7 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
     const view = useRef(null)
     useEffect(()=>{
         console.log("first render")
-        // console.log("schema", schema)
         const state = make_new_state_with_doc(other_doc)
-        // console.log("state is",state)
         view.current = new EditorView(viewHost.current, {
             state:state,
             dispatchTransaction:(transaction) => {
@@ -118,7 +168,7 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
                 let newstate = view.current.state.apply(transaction)
                 view.current.updateState(newstate)
             },
-            nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
+            // nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
         })
         return () => view.current.destroy()
     },[props.page])
@@ -127,7 +177,8 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
         const ss = StorageManager.getStorageSystem()
         ss.loadPageDoc(page).then((content:Node) => {
             console.log("got content for the page",content)
-            const state = make_new_state_with_doc(content)
+            const new_content = SCHEMA.nodeFromJSON(content.toJSON())
+            const state = make_new_state_with_doc(new_content)
             view.current.updateState(state)
         })
     }, [props.page]);
@@ -145,16 +196,16 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
         const editor:EditorView = view.current as unknown as EditorView
         await StorageManager.getStorageSystem().savePageDoc(page, editor.state.doc)
     }
-    const switch_to_markdown = () => {
-        const doc = view.current.state.doc
-        console.log("doc is",doc)
-        const text = defaultMarkdownSerializer.serialize(doc)
-        console.log("markdown is",text)
-    }
-    const switch_to_visual = () => {
-        const doc = defaultMarkdownParser.parse(test_markdown_doc)
-        view.current.updateState(make_new_state_with_doc(doc))
-    }
+    // const switch_to_markdown = () => {
+    //     // const doc = view.current.state.doc
+    //     // console.log("doc is",doc)
+    //     // const text = defaultMarkdownSerializer.serialize(doc)
+    //     // console.log("markdown is",text)
+    // }
+    // const switch_to_visual = () => {
+    //     // const doc = defaultMarkdownParser.parse(test_markdown_doc)
+    //     // view.current.updateState(make_new_state_with_doc(doc))
+    // }
 
     const make_strong_action = () => {
         toggleMark(schema.marks.strong)(view.current.state, view.current.dispatch)
@@ -170,7 +221,7 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
         setBlockType(schema.nodes.heading, {level:1})(view.current.state,view.current.dispatch)
     }
     const make_selection_codeblock = () => {
-        setBlockType(schema.nodes.code_block, {})(view.current.state,view.current.dispatch)
+        setBlockType(SCHEMA.nodes.code_block, {})(view.current.state,view.current.dispatch)
     }
     const make_selection_paragraph = () => {
         setBlockType(schema.nodes.paragraph)(view.current.state,view.current.dispatch)
@@ -183,8 +234,8 @@ export function  MarkdownEditor (props:{page:typeof PageModel}) {
         <div className={"toolbar"}>
             {/*<button onClick={load_from_markdown}>load markdown</button>*/}
             <button onClick={save_to_markdown}>save</button>
-            <button onClick={switch_to_visual}>visual</button>
-            <button onClick={switch_to_markdown}>code</button>
+            {/*<button onClick={switch_to_visual}>visual</button>*/}
+            {/*<button onClick={switch_to_markdown}>code</button>*/}
         </div>
         <div className={"toolbar"}>
             <button onClick={make_strong_action}>strong</button>
