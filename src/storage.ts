@@ -4,7 +4,7 @@
 
 import {Docset, DocsetModel, PageModel, PageType} from "./model";
 import {Node, Schema, NodeSpec} from "prosemirror-model"
-import {defaultMarkdownParser} from "prosemirror-markdown";
+import {defaultMarkdownParser, defaultMarkdownSerializer} from "prosemirror-markdown";
 
 
 export interface StorageSystem {
@@ -41,22 +41,17 @@ export class NonTauriStorageSystemStub implements StorageSystem {
     }
 
     loadPageDoc(page: PageType): Promise<Node> {
-        console.log("getting content for page",page)
         const content = this.page_to_content.get(page.id())
         if(content) {
-            console.log("parsing content",content)
-            const startdoc = defaultMarkdownParser.parse(content)
-            console.log("parsed",startdoc)
-            return Promise.resolve(startdoc)
+            return Promise.resolve(defaultMarkdownParser.parse(content))
         } else {
-            const startdoc = defaultMarkdownParser.parse("could not parse content")
-            return Promise.resolve(startdoc)
+            return Promise.resolve(defaultMarkdownParser.parse("could not parse content"))
         }
 
     }
 
     savePageDoc(page: PageType, doc: Node): Promise<void> {
-        console.log("pretending to save the page",page)
+        this.page_to_content.set(page.id(),defaultMarkdownSerializer.serialize(doc))
         return Promise.resolve()
     }
     selectDocset(): Promise<Docset | undefined> {

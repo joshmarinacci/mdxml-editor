@@ -13,11 +13,11 @@ import {TauriStorage} from "./tauristorage";
 
 
 const DummyDocset = DocsetModel.cloneWith({
-    title:"dummyDocset",
+    title: "dummyDocset",
 })
 
 
-if('__TAURI_INTERNALS__' in window) {
+if ('__TAURI_INTERNALS__' in window) {
     console.log("running under Tauri")
     StorageManager.registerStorageSystem(new TauriStorage())
 } else {
@@ -32,15 +32,15 @@ export function App() {
     const [docset, setDocset] = useState<typeof DocsetModel>(DummyDocset)
     const select_docset = async () => {
         const maybe_docset = await StorageManager.getStorageSystem().selectDocset()
-        if(maybe_docset){
+        if (maybe_docset) {
             let docset = maybe_docset as Docset
-            console.log("new docset is",docset)
+            console.log("new docset is", docset)
             setDocset(docset)
         }
     }
     const make_new_docset = async () => {
         const docset = await StorageManager.getStorageSystem().createNewDocset({
-            title:'untitled docset',
+            title: 'untitled docset',
         })
         setDocset(docset)
     }
@@ -83,7 +83,7 @@ export function App() {
     //     console.log(result)
     //     console.log(result.stdout)
     // }
-    console.log("list of pages",docset.get('pages').count())
+    console.log("list of pages", docset.get('pages').count())
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
             <div className={'main-layout'}>
@@ -94,10 +94,10 @@ export function App() {
                     {/*<button onClick={doPreview}>preview</button>*/}
                 </header>
                 <div>
-                <div>
-                    <Label value={docset.get('title')}/>
-                </div>
-                <FileListView className={'file-list'} docset={docset}/>
+                    <div>
+                        <Label value={docset.get('title')}/>
+                    </div>
+                    <FileListView className={'file-list'} docset={docset}/>
                 </div>
                 <MarkdownEditorWrapper pages={docset.get('selectedPage')}/>
             </div>

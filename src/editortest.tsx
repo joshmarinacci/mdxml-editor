@@ -152,7 +152,7 @@ export function MarkdownEditorWrapper(props:{pages:typeof PageListModel}) {
     return <MarkdownEditor page={pages.get(0)}/>
 }
 
-export function  MarkdownEditor (props:{page:typeof PageModel}) {
+export function MarkdownEditor (props:{page:typeof PageModel}) {
     const page = props.page
 
     console.log("page is",props.page)
