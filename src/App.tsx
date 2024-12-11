@@ -38,6 +38,9 @@ export function App() {
             setDocset(docset)
         }
     }
+    const save_docset = async () => {
+        await StorageManager.getStorageSystem().saveAll(docset)
+    }
     const make_new_docset = async () => {
         const docset = await StorageManager.getStorageSystem().createNewDocset({
             title: 'untitled docset',
@@ -91,6 +94,7 @@ export function App() {
                     <button onClick={make_new_docset}>New Docset</button>
                     <button onClick={make_new_page}>New Page</button>
                     <button onClick={select_docset}>open</button>
+                    <button onClick={save_docset}>save docset</button>
                     {/*<button onClick={doPreview}>preview</button>*/}
                 </header>
                 <div>

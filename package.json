@@ -25,17 +25,18 @@
     "josh_web_util": "^0.0.5",
     "lexical": "^0.17.0",
     "mdxml-tools": "^0.0.7",
+    "prosemirror-codemirror-block": "^0.5.7",
     "prosemirror-example-setup": "^1.2.3",
     "prosemirror-markdown": "^1.13.1",
     "prosemirror-schema-basic": "^1.2.3",
     "prosemirror-schema-list": "^1.4.1",
     "prosemirror-state": "^1.4.3",
-    "prosemirror-codemirror-block": "^0.5.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rtds-core": "^0.0.18",
     "rtds-react": "^0.0.25",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "xml-formatter": "^3.6.3"
   },
   "scripts": {
     "clean": "rm -rf build",

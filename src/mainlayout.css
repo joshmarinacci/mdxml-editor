@@ -19,16 +19,6 @@
     grid-column: 1;
 }
 
-li .file-item {
-    color: #333;
-}
-li:hover .file-item {
-    color: white;
-}
-li.selected .file-item {
-    color: white;
-}
-
 .main-layout .page-list {
     border: var(--panel-border);
     background-color: var(--panel-background);

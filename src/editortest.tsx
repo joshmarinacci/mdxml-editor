@@ -231,6 +231,14 @@ export function MarkdownEditor (props:{page:typeof PageModel}) {
             <label>Title</label>
             <EditableLabel value={props.page.get('title')}/>
         </div>
+        <div className={'toolbar'}>
+            <label>FileName</label>
+            <label>{props.page.get('file').get('fileName').get()}</label>
+        </div>
+        <div className={'toolbar'}>
+            <label>FilePath</label>
+            <label>{props.page.get('file').get('filePath').get()}</label>
+        </div>
         <div className={"toolbar"}>
             {/*<button onClick={load_from_markdown}>load markdown</button>*/}
             <button onClick={save_to_markdown}>save</button>

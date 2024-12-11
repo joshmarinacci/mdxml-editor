@@ -15,8 +15,9 @@ export type FileInfo = typeof FileInfoModel
 
 
 export const PageModel = S.map({
-    title:S.string(),
+    title:S.string("new page here"),
     file:FileInfoModel,
+    created:S.boolean(false),
 },{
     typeName:"Page"
 })
@@ -31,6 +32,7 @@ export const PageListModel = S.list(PageModel)
 
 export const DocsetModel = S.map({
     title:S.string(),
+    basedir:S.string(),
     pages:PageListModel,
     // files:S.list(FileInfoModel),
     resources:S.list(ResourceModel),
