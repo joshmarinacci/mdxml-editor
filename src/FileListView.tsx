@@ -14,6 +14,7 @@ export function FileListView(props: { className: string, docset: typeof DocsetMo
         <ListView data={props.docset.get('pages')}
                   itemRenderer={rend}
                   selected={props.docset.get('selectedPage')}
+                  reorderable={true}
                   onSelect={(e) => {
                       props.docset.get('selectedPage').clear()
                       props.docset.get('selectedPage').push(e)
