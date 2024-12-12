@@ -5,7 +5,7 @@ import {StorageSystem} from "./storage";
 import {open} from '@tauri-apps/plugin-dialog';
 import {exists, readFile, readTextFile, writeTextFile, open as openFile} from '@tauri-apps/plugin-fs';
 import {defaultMarkdownParser, defaultMarkdownSerializer} from "prosemirror-markdown";
-import {resolve} from "@tauri-apps/api/path";
+import {resolve, documentDir} from "@tauri-apps/api/path";
 
 export async function xmlToDocset(basedir:string, xml: Document):Promise<Docset> {
     const root = xml.getRootNode().firstChild as Element
@@ -52,6 +52,7 @@ export class TauriStorage implements StorageSystem {
             directory:true,
             recursive:true,
             canCreateDirectories:true,
+            defaultPath: await documentDir(),
             title:"Select Docset",
         });
         console.log("selected",selected)
