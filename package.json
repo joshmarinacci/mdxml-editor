@@ -13,7 +13,7 @@
     "@codemirror/view": "^6.35.2",
     "@tauri-apps/api": "^2.1.1",
     "@tauri-apps/plugin-dialog": "^2.2.0",
-    "@tauri-apps/plugin-fs": "^2.2.0",
+    "@tauri-apps/plugin-fs": "2.0.2",
     "@tauri-apps/plugin-process": "^2.2.0",
     "@tauri-apps/plugin-shell": "^2.2.0",
     "josh_js_util": "^0.1.39",

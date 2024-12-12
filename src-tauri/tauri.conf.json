@@ -14,7 +14,7 @@
     "windows": [
       {
         "title": "mdxml-editor",
-        "width": 800,
+        "width": 1024,
         "height": 600,
         "resizable": true,
         "fullscreen": false

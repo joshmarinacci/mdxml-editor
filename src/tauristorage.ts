@@ -52,7 +52,7 @@ export class TauriStorage implements StorageSystem {
             directory:true,
             recursive:true,
             canCreateDirectories:true,
-            defaultPath: await documentDir(),
+            // defaultPath: await documentDir(),
             title:"Select Docset",
         });
         console.log("selected",selected)
