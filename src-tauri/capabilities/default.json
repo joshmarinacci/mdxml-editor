@@ -7,9 +7,6 @@
   ],
   "permissions": [
     "core:default",
-    "dialog:default",
-    "fs:default",
-    "fs:allow-app-write",
     {
       "identifier": "shell:allow-execute",
       "allow": [
@@ -17,9 +14,20 @@
           "name": "npm-run",
           "cmd": "npm",
           "args": true,
-          "sidecar":false
+          "sidecar": false
         }
       ]
-    }
+    },
+    "fs:default",
+    "fs:allow-app-write",
+    "fs:allow-read",
+    "fs:read-all",
+    "fs:allow-read-file",
+    "fs:allow-read-text-file",
+    "fs:allow-write-text-file",
+    "core:app:allow-app-hide",
+    "core:menu:default",
+    "process:default",
+    "dialog:default"
   ]
 }

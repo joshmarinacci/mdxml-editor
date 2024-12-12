@@ -10,16 +10,61 @@ import {useState} from "react";
 import {Label, useChanged} from "rtds-react";
 import {NonTauriStorageSystemStub, StorageManager} from "./storage";
 import {TauriStorage} from "./tauristorage";
+import {menu, app} from "@tauri-apps/api"
+import {exit} from "@tauri-apps/plugin-process"
 
+import {Menu, MenuItem, Submenu} from "@tauri-apps/api/menu";
 
 const DummyDocset = DocsetModel.cloneWith({
     title: "dummyDocset",
 })
 
 
+async function  setup_menubar() {
+    const appMenu = await Submenu.new({
+        text:'The App',
+        items:[
+            await MenuItem.new({
+                text:"Hide MDXML Editor",
+                accelerator:"Cmd+H",
+                action: async () => {
+                    await app.hide()
+                }
+            }),
+            await MenuItem.new({
+                text:"Quit",
+                accelerator: "Cmd+Q",
+                action: async (id) => {
+                    await exit()
+                }
+            })
+        ]
+    })
+    const fileMenu = await Submenu.new({
+        text:'File',
+        items:[
+            await MenuItem.new({
+                text:"New Docset"
+            }),
+            await MenuItem.new({
+                text:"New Page",
+                accelerator:"Cmd+N",
+            }),
+            await MenuItem.new({
+                text:"Open Docset",
+                accelerator:"Cmd+O",
+            })
+        ]
+    })
+    const menu = await Menu.new({
+        items:[appMenu,fileMenu]
+    })
+    await menu.setAsAppMenu()
+}
 if ('__TAURI_INTERNALS__' in window) {
-    console.log("running under Tauri")
+    console.log("running under Tauri, right?")
     StorageManager.registerStorageSystem(new TauriStorage())
+    setup_menubar().then(() => console.log("done with it"))
 } else {
     console.log("does not have internals")
     StorageManager.registerStorageSystem(new NonTauriStorageSystemStub())

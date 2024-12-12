@@ -154,8 +154,6 @@ export function MarkdownEditorWrapper(props:{pages:typeof PageListModel}) {
 
 export function MarkdownEditor (props:{page:typeof PageModel}) {
     const page = props.page
-
-    console.log("page is",props.page)
     const viewHost = useRef(null);
     const view = useRef(null)
     useEffect(()=>{

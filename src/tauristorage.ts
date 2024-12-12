@@ -3,8 +3,9 @@ import {Node} from "prosemirror-model";
 import {Docset, DocsetModel, PageModel, PageType} from "./model";
 import {StorageSystem} from "./storage";
 import {open} from '@tauri-apps/plugin-dialog';
-import {exists, readTextFile, writeTextFile} from '@tauri-apps/plugin-fs';
+import {exists, readFile, readTextFile, writeTextFile, open as openFile} from '@tauri-apps/plugin-fs';
 import {defaultMarkdownParser, defaultMarkdownSerializer} from "prosemirror-markdown";
+import {resolve} from "@tauri-apps/api/path";
 
 export async function xmlToDocset(basedir:string, xml: Document):Promise<Docset> {
     const root = xml.getRootNode().firstChild as Element
@@ -53,8 +54,27 @@ export class TauriStorage implements StorageSystem {
             canCreateDirectories:true,
             title:"Select Docset",
         });
+        console.log("selected",selected)
         if(selected) {
-            const rawData = await readTextFile(selected + "/docset.xml")
+            const docset_path = selected+"/docset.xml"
+            console.log("reading",docset_path)
+            console.log("exists",await exists(docset_path))
+            const resolved = await resolve(docset_path)
+            console.log("resolved",resolved)
+
+
+            const file = await openFile(resolved, {
+                read: true,
+            });
+            const buf = new Uint8Array();
+            await file.read(buf);
+            console.log("buf len",buf.length)
+            const textContents = new TextDecoder().decode(buf);
+            await file.close();
+            console.log("text contents",textContents)
+
+            const rawData = await readTextFile(resolved)
+            console.log("rawData",rawData.length, rawData)
             const xml_doc = new DOMParser().parseFromString(rawData, "text/xml")
             return await xmlToDocset(selected, xml_doc)
         }
