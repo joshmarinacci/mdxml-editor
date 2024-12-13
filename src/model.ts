@@ -43,15 +43,14 @@ export const DocsetModel = S.map({
 export type Docset = typeof DocsetModel
 
 
-// export const PageInfo = S.map({
-//     fileName: S.string(),
-//     title: S.string(),
-// })
+const GlobalStateModel = S.map({
+    docset:DocsetModel,
+})
 
-// export const Site = S.map({
-//     files: S.list(FileInfo),
-//     pages: S.list(PageInfo),
-//     title: S.string("Trunk Docs"),
-//     docsetFile: S.string(),
-//     selectedFile: FileInfo
-// })
+export type GlobalStateType = typeof GlobalStateModel
+
+export const GlobalState = GlobalStateModel.cloneWith({
+    docset:{
+        title:"Dummy Docset"
+    }
+})

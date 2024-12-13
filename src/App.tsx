@@ -5,64 +5,14 @@ import "./mainlayout.css"
 import 'rtds-react/build/index.esm.css'
 import {FileListView} from "./FileListView.js";
 import {MarkdownEditorWrapper} from "./editortest";
-import {Docset, DocsetModel, PageModel} from "./model";
-import {useState} from "react";
+import {Docset, GlobalState} from "./model";
 import {Label, useChanged} from "rtds-react";
 import {NonTauriStorageSystemStub, StorageManager} from "./storage";
 import {TauriStorage} from "./tauristorage";
-import {menu, app} from "@tauri-apps/api"
-import {exit} from "@tauri-apps/plugin-process"
+import {setup_menubar} from "./taurisetup";
 
-import {Menu, MenuItem, Submenu} from "@tauri-apps/api/menu";
-
-const DummyDocset = DocsetModel.cloneWith({
-    title: "dummyDocset",
-})
-
-
-async function  setup_menubar() {
-    const appMenu = await Submenu.new({
-        text:'The App',
-        items:[
-            await MenuItem.new({
-                text:"Hide MDXML Editor",
-                accelerator:"Cmd+H",
-                action: async () => {
-                    await app.hide()
-                }
-            }),
-            await MenuItem.new({
-                text:"Quit",
-                accelerator: "Cmd+Q",
-                action: async (id) => {
-                    await exit()
-                }
-            })
-        ]
-    })
-    const fileMenu = await Submenu.new({
-        text:'File',
-        items:[
-            await MenuItem.new({
-                text:"New Docset"
-            }),
-            await MenuItem.new({
-                text:"New Page",
-                accelerator:"Cmd+N",
-            }),
-            await MenuItem.new({
-                text:"Open Docset",
-                accelerator:"Cmd+O",
-            })
-        ]
-    })
-    const menu = await Menu.new({
-        items:[appMenu,fileMenu]
-    })
-    await menu.setAsAppMenu()
-}
 if ('__TAURI_INTERNALS__' in window) {
-    console.log("running under Tauri, right?")
+    console.log("running under Tauri")
     StorageManager.registerStorageSystem(new TauriStorage())
     setup_menubar().then(() => console.log("done with it"))
 } else {
@@ -70,52 +20,31 @@ if ('__TAURI_INTERNALS__' in window) {
     StorageManager.registerStorageSystem(new NonTauriStorageSystemStub())
 }
 
-
+// reload when on file changes when running under esbuild
 new EventSource('/esbuild').addEventListener('change', () => location.reload())
 
 export function App() {
-    const [docset, setDocset] = useState<typeof DocsetModel>(DummyDocset)
     const select_docset = async () => {
         const maybe_docset = await StorageManager.getStorageSystem().selectDocset()
         if (maybe_docset) {
-            let docset = maybe_docset as Docset
-            console.log("new docset is", docset)
-            setDocset(docset)
+            GlobalState.set('docset',maybe_docset as Docset)
         }
     }
     const save_docset = async () => {
-        await StorageManager.getStorageSystem().saveAll(docset)
+        await StorageManager.getStorageSystem().saveAll(GlobalState.get('docset'))
     }
     const make_new_docset = async () => {
         const docset = await StorageManager.getStorageSystem().createNewDocset({
             title: 'untitled docset',
         })
-        setDocset(docset)
+        GlobalState.set('docset',docset)
     }
     const make_new_page = async () => {
-        await StorageManager.getStorageSystem().addNewPage(docset)
+        await StorageManager.getStorageSystem().addNewPage(GlobalState.get('docset'))
     }
-    useChanged(docset)
-    // const doOpen = async () => {
-    //     const selected = await open({
-    //         multiple:false,
-    //     });
-    //     console.log("selected the file",selected)
-    //     if(selected) {
-    //         let ex = await exists(selected, {baseDir: BaseDirectory.AppData});
-    //         console.log(ex)
-    //         const configToml = await readTextFile(selected)
-    //         console.log("xml file is",configToml)
-    //         const filename = selected.substring(selected.lastIndexOf('/')+1)
-    //         let file = FileInfo.cloneWith({
-    //             filePath: selected,
-    //             fileName: filename,
-    //             fileType: 'mdxml'
-    //         })
-    //         site.get('files').clear()
-    //         site.get('files').push(file)
-    //     }
-    // }
+    useChanged(GlobalState)
+    useChanged(GlobalState.get('docset'))
+
     // const doPreview = async () => {
     //     console.log("file is", site.get('selectedFile').get('filePath').get())
     //     const path = site.get('selectedFile').get('filePath').get()
@@ -131,7 +60,6 @@ export function App() {
     //     console.log(result)
     //     console.log(result.stdout)
     // }
-    console.log("list of pages", docset.get('pages').count())
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
             <div className={'main-layout'}>
@@ -144,11 +72,11 @@ export function App() {
                 </header>
                 <div>
                     <div>
-                        <Label value={docset.get('title')}/>
+                        <Label value={GlobalState.get('docset').get('title')}/>
                     </div>
-                    <FileListView className={'file-list'} docset={docset}/>
+                    <FileListView className={'file-list'} docset={GlobalState.get('docset')}/>
                 </div>
-                <MarkdownEditorWrapper pages={docset.get('selectedPage')}/>
+                <MarkdownEditorWrapper pages={GlobalState.get('docset').get('selectedPage')}/>
             </div>
         </PopupContext.Provider>
     </DialogContext.Provider>

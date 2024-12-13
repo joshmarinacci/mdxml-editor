@@ -1,5 +1,5 @@
 import {ListItemRenderer, ListView, StringRenderer, useChanged} from "rtds-react";
-import {DocsetModel, PageModel} from "./model";
+import {Docset, PageModel} from "./model";
 
 const rend:ListItemRenderer<typeof PageModel> = (value) => {
     return <>
@@ -8,7 +8,8 @@ const rend:ListItemRenderer<typeof PageModel> = (value) => {
     </>
 }
 
-export function FileListView(props: { className: string, docset: typeof DocsetModel }) {
+export function FileListView(props: { className: string, docset: Docset }) {
+    useChanged(props.docset)
     return <div className={'file-list'}>
         <ListView data={props.docset.get('pages')}
                   itemRenderer={rend}
