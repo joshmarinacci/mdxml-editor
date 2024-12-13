@@ -22,7 +22,7 @@ import {
     languageLoaders,
     legacyLanguageLoaders
 } from "prosemirror-codemirror-block"
-import {YoutubeEmbedView, YoutubeLinkNodeSpec} from "./youtube_embed";
+import {YOUTUBE_EMBED, YoutubeEmbedView, YoutubeLinkNodeSpec} from "./youtube_embed";
 
 const codeBlockSpec = schema.spec.nodes.get("code_block");
 const SCHEMA = new Schema({
@@ -31,7 +31,7 @@ const SCHEMA = new Schema({
             ...(codeBlockSpec || {}),
             attrs: {...codeBlockSpec?.attrs, lang:{default:null}}
         })
-        .update('youtube_embed',{ ...(YoutubeLinkNodeSpec || {}), }),
+        .update(YOUTUBE_EMBED,{ ...(YoutubeLinkNodeSpec || {}), }),
     marks:schema.spec.marks
 })
 
@@ -52,7 +52,7 @@ const other_doc = schema.node('doc',null, [
 function insertYoutubeEmbed() {
     return function (state, dispatch) {
         if (dispatch)
-            dispatch(state.tr.replaceSelectionWith(SCHEMA.nodes.youtube_embed.create({slug:""})))
+            dispatch(state.tr.replaceSelectionWith(SCHEMA.nodes[YOUTUBE_EMBED].create({slug:""})))
         return true
     }
 }

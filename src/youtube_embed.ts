@@ -1,5 +1,6 @@
 import {NodeSpec} from "prosemirror-model";
 
+export const YOUTUBE_EMBED = "youtube_embed"
 export const YoutubeLinkNodeSpec: NodeSpec = {
     attrs: { slug: { default: "asdf" }},
     inline: false,
@@ -25,4 +26,11 @@ export class YoutubeEmbedView {
     stopEvent() {
         return true
     }
+}
+
+export function youtube_embed(state,node: any) {
+    console.log('serializing the youtube embed with node',node)
+    state.write(`{% embed url="https://youtu.be/${node.attrs.slug}" %}`)
+    // state.write('youtube_embed' + node.attrs.slug)
+    state.closeBlock(node)
 }

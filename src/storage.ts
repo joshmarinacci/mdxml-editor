@@ -4,7 +4,8 @@
 
 import {Docset, DocsetModel, PageModel, PageType} from "./model";
 import {Node, Schema, NodeSpec} from "prosemirror-model"
-import {defaultMarkdownParser, defaultMarkdownSerializer} from "prosemirror-markdown";
+import {defaultMarkdownParser, defaultMarkdownSerializer, MarkdownSerializer} from "prosemirror-markdown";
+import {youtube_embed} from "./youtube_embed";
 
 
 export interface StorageSystem {
@@ -52,7 +53,16 @@ export class NonTauriStorageSystemStub implements StorageSystem {
 
     savePageDoc(page: PageType, doc: Node): Promise<void> {
         console.log("serializing",doc)
-        this.page_to_content.set(page.id(),defaultMarkdownSerializer.serialize(doc))
+        const ser = new MarkdownSerializer(
+            {
+                ...defaultMarkdownSerializer.nodes,
+                youtube_embed,
+            },
+            defaultMarkdownSerializer.marks)
+
+        const output = ser.serialize(doc)
+        console.log("output",output)
+        this.page_to_content.set(page.id(),output)
         return Promise.resolve()
     }
     selectDocset(): Promise<Docset | undefined> {
