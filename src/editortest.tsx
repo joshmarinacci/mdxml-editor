@@ -87,7 +87,7 @@ const MDXMLSchema = new Schema({
 
 
 const make_strong_command = toggleMark(schema.marks.strong)
-const make_emphasized_command = toggleMark(schema.marks.emphasized)
+const make_emphasized_command = toggleMark(schema.marks.em)
 const make_inlinecode_command = toggleMark(schema.marks.code)
 
 function make_new_state_with_doc(doc:Node) {
@@ -181,39 +181,24 @@ export function MarkdownEditor (props:{page:typeof PageModel}) {
         })
     }, [props.page]);
 
-    useEffect(() => {
-        // console.log("every render")
-        // const tr = view.current.state.tr.setMeta()
-    }, []);
-
-    // const load_from_markdown = () => {
-    //     const state = make_new_state_with_doc(startdoc)
-    //     view.current.updateState(state)
-    // }
     const save_to_markdown = async () => {
         const editor:EditorView = view.current as unknown as EditorView
         await StorageManager.getStorageSystem().savePageDoc(page, editor.state.doc)
     }
-    // const switch_to_markdown = () => {
-    //     // const doc = view.current.state.doc
-    //     // console.log("doc is",doc)
-    //     // const text = defaultMarkdownSerializer.serialize(doc)
-    //     // console.log("markdown is",text)
-    // }
-    // const switch_to_visual = () => {
-    //     // const doc = defaultMarkdownParser.parse(test_markdown_doc)
-    //     // view.current.updateState(make_new_state_with_doc(doc))
-    // }
-
-    const make_strong_action = () => {
-        toggleMark(schema.marks.strong)(view.current.state, view.current.dispatch)
-        // setBlockType(schema.nodes.paragraph)(view.current.state,view.current.dispatch)
+    const make_strong_action = (e) => {
+        e.preventDefault()
+        view.current.focus()
+        toggleMark(schema.marks.strong)(view.current.state, view.current.dispatch, view.current)
     }
-    const make_em_action = () => {
-        toggleMark(schema.marks.em)(view.current.state, view.current.dispatch)
+    const make_em_action = (e) => {
+        e.preventDefault()
+        view.current.focus()
+        toggleMark(schema.marks.em)(view.current.state, view.current.dispatch, view.current)
     }
-    const make_inlinecode_action = () => {
-        toggleMark(schema.marks.code)(view.current.state, view.current.dispatch)
+    const make_inlinecode_action = (e) => {
+        e.preventDefault()
+        view.current.focus()
+        toggleMark(schema.marks.code)(view.current.state, view.current.dispatch, view.current)
     }
     const make_selection_heading = () => {
         setBlockType(schema.nodes.heading, {level:1})(view.current.state,view.current.dispatch)

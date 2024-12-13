@@ -11,10 +11,13 @@ import {NonTauriStorageSystemStub, StorageManager} from "./storage";
 import {TauriStorage} from "./tauristorage";
 import {setup_menubar} from "./taurisetup";
 
+
+let INLINE_MENUBAR = true
 if ('__TAURI_INTERNALS__' in window) {
     console.log("running under Tauri")
     StorageManager.registerStorageSystem(new TauriStorage())
     setup_menubar().then(() => console.log("done with it"))
+    INLINE_MENUBAR = false
 } else {
     console.log("does not have internals")
     StorageManager.registerStorageSystem(new NonTauriStorageSystemStub())
@@ -63,13 +66,13 @@ export function App() {
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
             <div className={'main-layout'}>
-                <header>
+                {INLINE_MENUBAR &&  <header>
                     <button onClick={make_new_docset}>New Docset</button>
                     <button onClick={make_new_page}>New Page</button>
                     <button onClick={select_docset}>open</button>
                     <button onClick={save_docset}>save docset</button>
                     {/*<button onClick={doPreview}>preview</button>*/}
-                </header>
+                </header>}
                 <div>
                     <div>
                         <Label value={GlobalState.get('docset').get('title')}/>
