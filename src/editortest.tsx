@@ -1,9 +1,9 @@
 import {EditorState} from "prosemirror-state"
 import {EditorView} from "prosemirror-view"
-import {Node, Schema, NodeSpec} from "prosemirror-model"
+import {Node, Schema} from "prosemirror-model"
 // import {schema} from "prosemirror-schema-basic"
 import {useEffect, useRef} from "react";
-import {defaultMarkdownParser, defaultMarkdownSerializer, schema} from "prosemirror-markdown"
+import {defaultMarkdownParser, schema} from "prosemirror-markdown"
 import {history, redo, undo} from "prosemirror-history"
 import {keymap} from "prosemirror-keymap"
 import {baseKeymap, setBlockType, toggleMark} from "prosemirror-commands"
@@ -15,7 +15,6 @@ import {PageListModel, PageModel} from "./model";
 import {EditableLabel} from "rtds-react";
 import {StorageManager} from "./storage";
 // import {arrowHandlers, CodeBlockView} from "./blockcodeview";
-
 import {
     codeBlockArrowHandlers,
     codeMirrorBlockPlugin,
@@ -23,13 +22,16 @@ import {
     languageLoaders,
     legacyLanguageLoaders
 } from "prosemirror-codemirror-block"
+import {YoutubeEmbedView, YoutubeLinkNodeSpec} from "./youtube_embed";
 
 const codeBlockSpec = schema.spec.nodes.get("code_block");
 const SCHEMA = new Schema({
-    nodes: schema.spec.nodes.update("code_block",{
-        ...(codeBlockSpec || {}),
-        attrs: {...codeBlockSpec?.attrs, lang:{default:null}}
-    }),
+    nodes: schema.spec.nodes
+        .update("code_block",{
+            ...(codeBlockSpec || {}),
+            attrs: {...codeBlockSpec?.attrs, lang:{default:null}}
+        })
+        .update('youtube_embed',{ ...(YoutubeLinkNodeSpec || {}), }),
     marks:schema.spec.marks
 })
 
@@ -47,7 +49,15 @@ const other_doc = schema.node('doc',null, [
     schema.node('code_block',null,[schema.text('this is a code block')]),
 ])
 
-const codeBlockDoc = {
+function insertYoutubeEmbed() {
+    return function (state, dispatch) {
+        if (dispatch)
+            dispatch(state.tr.replaceSelectionWith(SCHEMA.nodes.youtube_embed.create({slug:""})))
+        return true
+    }
+}
+
+const exampleDoc = {
     content: [
         {
             content: [
@@ -74,16 +84,6 @@ const codeBlockDoc = {
     type: "doc",
 };
 
-
-const YoutubeLinkNodeSpec:NodeSpec = {
-    attrs:{url: {default:"asdf"}},
-    inline:false,
-    draggable:true,
-}
-
-const MDXMLSchema = new Schema({
-    nodes:schema.spec.nodes.append(YoutubeLinkNodeSpec),
-})
 
 
 const make_strong_command = toggleMark(schema.marks.strong)
@@ -166,6 +166,9 @@ export function MarkdownEditor (props:{page:typeof PageModel}) {
                 let newstate = view.current.state.apply(transaction)
                 view.current.updateState(newstate)
             },
+            nodeViews: {
+                youtube_embed(node) { return new YoutubeEmbedView(node) }
+            }
             // nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
         })
         return () => view.current.destroy()
@@ -209,6 +212,9 @@ export function MarkdownEditor (props:{page:typeof PageModel}) {
     const make_selection_paragraph = () => {
         setBlockType(schema.nodes.paragraph)(view.current.state,view.current.dispatch)
     }
+    const insert_youtube_embed = () => {
+        insertYoutubeEmbed()(view.current.state,view.current.dispatch,view.current)
+    }
     return <div className={"editor"}>
         <div className={'toolbar'}>
             <label>Title</label>
@@ -229,14 +235,15 @@ export function MarkdownEditor (props:{page:typeof PageModel}) {
             {/*<button onClick={switch_to_markdown}>code</button>*/}
         </div>
         <div className={"toolbar"}>
-            <button onClick={make_strong_action}>strong</button>
-            <button onClick={make_em_action}>emphasized</button>
+            <button onClick={make_strong_action}><b>B</b></button>
+            <button onClick={make_em_action}><i>I</i></button>
             <button onClick={make_inlinecode_action}>code</button>
         </div>
         <div className={"toolbar"}>
             <button onClick={make_selection_heading}>heading</button>
             <button onClick={make_selection_codeblock}>code block</button>
             <button onClick={make_selection_paragraph}>paragraph</button>
+            <button onClick={insert_youtube_embed}>insert youtube</button>
         </div>
         <div ref={viewHost} className="content"/>
     </div>

@@ -51,6 +51,7 @@ export class NonTauriStorageSystemStub implements StorageSystem {
     }
 
     savePageDoc(page: PageType, doc: Node): Promise<void> {
+        console.log("serializing",doc)
         this.page_to_content.set(page.id(),defaultMarkdownSerializer.serialize(doc))
         return Promise.resolve()
     }
