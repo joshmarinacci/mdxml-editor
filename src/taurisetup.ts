@@ -3,6 +3,24 @@ import {app} from "@tauri-apps/api";
 import {exit} from "@tauri-apps/plugin-process";
 import {StorageManager} from "./storage";
 import {Docset, GlobalState} from "./model";
+import {Command} from "@tauri-apps/plugin-shell";
+
+const doPreview = async () => {
+    const basedir = GlobalState.get('docset').get('basedir').get()
+    const path = basedir + '/' + 'docset.xml'
+    let result = await Command.create("npm-run", [
+        'run',
+        'automated',
+        "--",
+        `--infile=${path}`,
+        '--docset',
+        "--browser",
+    ],{
+        cwd:"/Users/josh/WebstormProjects/mdxml-tools"
+    }).execute()
+    console.log(result)
+    console.log(result.stdout)
+}
 
 export async function setup_menubar() {
     const appMenu = await Submenu.new({
@@ -51,6 +69,13 @@ export async function setup_menubar() {
                     if(maybe_docset) {
                         GlobalState.set('docset',maybe_docset as Docset)
                     }
+                }
+            }),
+            await MenuItem.new({
+                text:'Preview',
+                accelerator: "Cmd+P",
+                action: async () => {
+                    await doPreview()
                 }
             })
         ]

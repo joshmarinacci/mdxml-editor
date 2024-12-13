@@ -48,21 +48,6 @@ export function App() {
     useChanged(GlobalState)
     useChanged(GlobalState.get('docset'))
 
-    // const doPreview = async () => {
-    //     console.log("file is", site.get('selectedFile').get('filePath').get())
-    //     const path = site.get('selectedFile').get('filePath').get()
-    //     let result = await Command.create("npm-run", [
-    //         'run',
-    //         'automated',
-    //         "--",
-    //         `--infile=${path}`,
-    //         "--browser",
-    //     ],{
-    //         cwd:"/Users/josh/WebstormProjects/mdxml-tools"
-    //     }).execute()
-    //     console.log(result)
-    //     console.log(result.stdout)
-    // }
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
             <div className={'main-layout'}>
@@ -71,7 +56,6 @@ export function App() {
                     <button onClick={make_new_page}>New Page</button>
                     <button onClick={select_docset}>open</button>
                     <button onClick={save_docset}>save docset</button>
-                    {/*<button onClick={doPreview}>preview</button>*/}
                 </header>}
                 <div>
                     <div>
